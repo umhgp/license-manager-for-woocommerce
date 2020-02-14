@@ -7,6 +7,7 @@ use LicenseManagerForWooCommerce\Models\Resources\Generator as GeneratorResource
 use LicenseManagerForWooCommerce\Repositories\Resources\Generator as GeneratorResourceRepository;
 use LicenseManagerForWooCommerce\Repositories\Resources\License as LicenseResourceRepository;
 use WP_Error;
+use WP_Post;
 
 defined('ABSPATH') || exit;
 
@@ -15,7 +16,7 @@ class ProductData
     /**
      * @var string
      */
-    const ADMIN_TAB_NAME   = 'license_manager_tab';
+    const ADMIN_TAB_NAME = 'license_manager_tab';
 
     /**
      * @var string
@@ -49,8 +50,7 @@ class ProductData
 
         // Change the product_data_tab icon
         add_action('admin_head', array($this, 'styleInventoryManagement'));
-
-        add_action('save_post', array($this, 'savePost'), 10);
+        add_action('save_post',  array($this, 'savePost'), 10);
     }
 
     /**
@@ -280,9 +280,9 @@ class ProductData
     /**
      * Adds the new product data fields to variable WooCommerce Products.
      *
-     * @param $loop
-     * @param $variationData
-     * @param $variation
+     * @param int     $loop
+     * @param array   $variationData
+     * @param WP_Post $variation
      */
     public function variableProductLicenseManagerFields($loop, $variationData, $variation)
     {
@@ -315,6 +315,7 @@ class ProductData
         woocommerce_wp_checkbox(
             array(
                 'id'          => 'lmfwc_licensed_product',
+                'name'        => sprintf('lmfwc_licensed_product[%d]', $loop),
                 'label'       => __('Sell license key(s)', 'lmfwc'),
                 'description' => __('Sell license keys for this variation', 'lmfwc'),
                 'value'       => $licensed,
@@ -327,6 +328,7 @@ class ProductData
         woocommerce_wp_text_input(
             array(
                 'id'                => 'lmfwc_licensed_product_delivered_quantity',
+                'name'              => sprintf('lmfwc_licensed_product_delivered_quantity[%d]', $loop),
                 'label'             => __('Delivered quantity', 'lmfwc'),
                 'value'             => $deliveredQuantity ? $deliveredQuantity : 1,
                 'description'       => __('Defines the amount of license keys to be delivered upon purchase.', 'lmfwc'),
@@ -344,6 +346,7 @@ class ProductData
         woocommerce_wp_checkbox(
             array(
                 'id'          => 'lmfwc_licensed_product_use_generator',
+                'name'        => sprintf('lmfwc_licensed_product_use_generator[%d]', $loop),
                 'label'       => __('Generate license keys', 'lmfwc'),
                 'description' => __('Automatically generate license keys with each sold variation', 'lmfwc'),
                 'value'       => $useGenerator,
@@ -356,6 +359,7 @@ class ProductData
         woocommerce_wp_select(
             array(
                 'id'      => 'lmfwc_licensed_product_assigned_generator',
+                'name'    => sprintf('lmfwc_licensed_product_assigned_generator[%d]', $loop),
                 'label'   => __('Assign generator', 'lmfwc'),
                 'options' => $generatorOptions,
                 'value'   => $generatorId
@@ -368,6 +372,7 @@ class ProductData
         woocommerce_wp_checkbox(
             array(
                 'id'          => 'lmfwc_licensed_product_use_stock',
+                'name'        => sprintf('lmfwc_licensed_product_use_stock[%d]', $loop),
                 'label'       => __('Sell from stock', 'lmfwc'),
                 'description' => __('Sell license keys from the available stock.', 'lmfwc'),
                 'value'       => $useStock,
@@ -400,16 +405,16 @@ class ProductData
     public function variableProductLicenseManagerSaveAction($variationId, $i)
     {
         // Update licensed product flag, according to checkbox.
-        if (array_key_exists('lmfwc_licensed_product', $_POST)) {
+        if (array_key_exists('lmfwc_licensed_product', $_POST)
+            && array_key_exists($i, $_POST['lmfwc_licensed_product'])
+        ) {
             update_post_meta($variationId, 'lmfwc_licensed_product', 1);
-        }
-
-        else {
+        } else {
             update_post_meta($variationId, 'lmfwc_licensed_product', 0);
         }
 
         // Update delivered quantity, according to field.
-        $deliveredQuantity = absint($_POST['lmfwc_licensed_product_delivered_quantity']);
+        $deliveredQuantity = absint($_POST['lmfwc_licensed_product_delivered_quantity'][$i]);
 
         update_post_meta(
             $variationId,
@@ -418,11 +423,11 @@ class ProductData
         );
 
         // Update the use stock flag, according to checkbox.
-        if (array_key_exists('lmfwc_licensed_product_use_stock', $_POST)) {
+        if (array_key_exists('lmfwc_licensed_product_use_stock', $_POST)
+            && array_key_exists($i, $_POST['lmfwc_licensed_product_use_stock'])
+        ) {
             update_post_meta($variationId, 'lmfwc_licensed_product_use_stock', 1);
-        }
-
-        else {
+        } else {
             update_post_meta($variationId, 'lmfwc_licensed_product_use_stock', 0);
         }
 
@@ -430,26 +435,24 @@ class ProductData
         update_post_meta(
             $variationId,
             'lmfwc_licensed_product_assigned_generator',
-            intval($_POST['lmfwc_licensed_product_assigned_generator'])
+            intval($_POST['lmfwc_licensed_product_assigned_generator'][$i])
         );
 
         // Update the use generator flag, according to checkbox.
-        if (array_key_exists('lmfwc_licensed_product_use_generator', $_POST)) {
+        if (array_key_exists('lmfwc_licensed_product_use_generator', $_POST)
+            && array_key_exists($i, $_POST['lmfwc_licensed_product_use_generator'])
+        ) {
             // You must select a generator if you wish to assign it to the product.
-            if (!$_POST['lmfwc_licensed_product_assigned_generator']) {
+            if (!$_POST['lmfwc_licensed_product_assigned_generator'][$i]) {
                 $error = new WP_Error(2, __('Assign a generator if you wish to sell automatically generated licenses for this product.', 'lmfwc'));
 
                 set_transient('lmfwc_error', $error, 45);
                 update_post_meta($variationId, 'lmfwc_licensed_product_use_generator', 0);
                 update_post_meta($variationId, 'lmfwc_licensed_product_assigned_generator', 0);
-            }
-
-            else {
+            } else {
                 update_post_meta($variationId, 'lmfwc_licensed_product_use_generator', 1);
             }
-        }
-
-        else {
+        } else {
             update_post_meta($variationId, 'lmfwc_licensed_product_use_generator', 0);
             update_post_meta($variationId, 'lmfwc_licensed_product_assigned_generator', 0);
         }

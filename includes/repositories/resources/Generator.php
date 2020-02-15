@@ -2,8 +2,8 @@
 
 namespace LicenseManagerForWooCommerce\Repositories\Resources;
 
-use stdClass;
 use LicenseManagerForWooCommerce\Abstracts\ResourceRepository as AbstractResourceRepository;
+use LicenseManagerForWooCommerce\Enums\ColumnType as ColumnTypeEnum;
 use LicenseManagerForWooCommerce\Interfaces\ResourceRepository as ResourceRepositoryInterface;
 use LicenseManagerForWooCommerce\Models\Resources\Generator as GeneratorResourceModel;
 
@@ -25,15 +25,17 @@ class Generator extends AbstractResourceRepository implements ResourceRepository
 
         $this->table      = $wpdb->prefix . self::TABLE;
         $this->primaryKey = 'id';
-    }
-
-    /**
-     * @param stdClass $dataObject
-     *
-     * @return mixed|GeneratorResourceModel
-     */
-    public function createResourceModel($dataObject)
-    {
-        return new GeneratorResourceModel($dataObject);
+        $this->model      = GeneratorResourceModel::class;
+        $this->mapping    = array(
+            'name'                => ColumnTypeEnum::VARCHAR,
+            'charset'             => ColumnTypeEnum::VARCHAR,
+            'chunks'              => ColumnTypeEnum::INT,
+            'chunk_length'        => ColumnTypeEnum::INT,
+            'times_activated_max' => ColumnTypeEnum::INT,
+            'separator'           => ColumnTypeEnum::VARCHAR,
+            'prefix'              => ColumnTypeEnum::VARCHAR,
+            'suffix'              => ColumnTypeEnum::VARCHAR,
+            'expires_in'          => ColumnTypeEnum::INT,
+        );
     }
 }

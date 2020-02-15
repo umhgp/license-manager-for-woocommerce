@@ -2,10 +2,10 @@
 
 namespace LicenseManagerForWooCommerce\Repositories\Resources;
 
-use LicenseManagerForWooCommerce\Models\Resources\ApiKey as ApiKeyResourceModel;
 use LicenseManagerForWooCommerce\Abstracts\ResourceRepository as AbstractResourceRepository;
+use LicenseManagerForWooCommerce\Enums\ColumnType as ColumnTypeEnum;
 use LicenseManagerForWooCommerce\Interfaces\ResourceRepository as ResourceRepositoryInterface;
-use stdClass;
+use LicenseManagerForWooCommerce\Models\Resources\ApiKey as ApiKeyResourceModel;
 
 defined('ABSPATH') || exit;
 
@@ -25,15 +25,16 @@ class ApiKey extends AbstractResourceRepository implements ResourceRepositoryInt
 
         $this->table      = $wpdb->prefix . self::TABLE;
         $this->primaryKey = 'id';
-    }
-
-    /**
-     * @param stdClass $dataObject
-     *
-     * @return mixed|ApiKeyResourceModel
-     */
-    public function createResourceModel($dataObject)
-    {
-        return new ApiKeyResourceModel($dataObject);
+        $this->model      = ApiKeyResourceModel::class;
+        $this->mapping    = array(
+            'user_id'         => ColumnTypeEnum::BIGINT,
+            'description'     => ColumnTypeEnum::VARCHAR,
+            'permissions'     => ColumnTypeEnum::VARCHAR,
+            'consumer_key'    => ColumnTypeEnum::CHAR,
+            'consumer_secret' => ColumnTypeEnum::CHAR,
+            'nonces'          => ColumnTypeEnum::LONGTEXT,
+            'truncated_key'   => ColumnTypeEnum::CHAR,
+            'last_access'     => ColumnTypeEnum::DATETIME
+        );
     }
 }

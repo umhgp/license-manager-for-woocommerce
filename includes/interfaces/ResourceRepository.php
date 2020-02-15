@@ -12,6 +12,13 @@ interface ResourceRepository
     /**
      * @param array $data
      *
+     * @return void
+     */
+    function sanitize(&$data);
+
+    /**
+     * @param array $data
+     *
      * @return mixed
      */
     public function insert($data);
@@ -97,13 +104,6 @@ interface ResourceRepository
     public function truncate();
 
     /**
-     * @param stdClass $dataObject
-     *
-     * @return AbstractResourceModel
-     */
-    public function createResourceModel($dataObject);
-
-    /**
      * @return string
      */
     public function getTable();
@@ -112,4 +112,14 @@ interface ResourceRepository
      * @return string
      */
     public function getPrimaryKey();
+
+    /**
+     * @return string
+     */
+    public function getModel();
+
+    /**
+     * @return array
+     */
+    public function getMapping();
 }

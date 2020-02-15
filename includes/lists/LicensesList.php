@@ -825,6 +825,8 @@ class LicensesList extends WP_List_Table
      */
     public function column_default($item, $columnName)
     {
+        $item = apply_filters('lmfwc_table_licenses_column_value', $item, $columnName);
+
         return $item[$columnName];
     }
 
@@ -847,7 +849,7 @@ class LicensesList extends WP_List_Table
             'activation' => array('times_activated_max', true)
         );
 
-        return $sortableColumns;
+        return apply_filters('lmfwc_table_licenses_column_sortable', $sortableColumns);
     }
 
     /**
@@ -1020,7 +1022,7 @@ class LicensesList extends WP_List_Table
      */
     public function get_columns()
     {
-        return array(
+        $columns = array(
             'cb'          => '<input type="checkbox" />',
             'license_key' => __('License key', 'lmfwc'),
             'order_id'    => __('Order', 'lmfwc'),
@@ -1033,6 +1035,8 @@ class LicensesList extends WP_List_Table
             'created'     => __('Created', 'lmfwc'),
             'updated'     => __('Updated', 'lmfwc')
         );
+
+        return apply_filters('lmfwc_table_licenses_column_name', $columns);
     }
 
     /**

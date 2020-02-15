@@ -50,6 +50,7 @@ if ($migrationMode === Migration::MODE_UP) {
             CHANGE `order_id` `order_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
             CHANGE `product_id` `product_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
             CHANGE `valid_for` `valid_for` INT(32) UNSIGNED NULL DEFAULT NULL,
+            CHANGE `source` `source` TINYINT(1) UNSIGNED NULL DEFAULT NULL,
             CHANGE `status` `status` TINYINT(1) UNSIGNED NOT NULL,
             CHANGE `times_activated` `times_activated` INT(10) UNSIGNED NULL DEFAULT NULL,
             CHANGE `times_activated_max` `times_activated_max` INT(10) UNSIGNED NULL DEFAULT NULL,

@@ -47,7 +47,6 @@ final class Main extends Singleton
         $this->_defineConstants();
         $this->_initHooks();
 
-        add_action('init', array($this, 'loadPluginTextDomain'));
         add_action('init', array($this, 'init'));
 
         new API\Authentication();
@@ -260,37 +259,6 @@ final class Main extends Singleton
 
         add_action('admin_enqueue_scripts', array($this, 'adminEnqueueScripts'));
         add_filter('plugin_row_meta', array($this, 'pluginRowMeta'), 10, 2);
-    }
-
-    /**
-     * Adds the i18n translations to the plugin.
-     *
-     * @return void
-     */
-    public function loadPluginTextDomain()
-    {
-        if (function_exists('determine_locale')) {
-            $locale = determine_locale();
-        }
-
-        else {
-            $locale = is_admin() ? get_user_locale() : get_locale();
-        }
-
-        $locale = apply_filters('plugin_locale', $locale, 'license-manager-for-woocommerce');
-
-        unload_textdomain('license-manager-for-woocommerce');
-
-        load_textdomain(
-            'license-manager-for-woocommerce',
-            WP_LANG_DIR . '/plugins/license-manager-for-woocommerce-' . $locale . '.mo'
-        );
-
-        load_plugin_textdomain(
-            'license-manager-for-woocommerce',
-            false,
-            plugin_basename(dirname(LMFWC_PLUGIN_FILE)) . '/i18n/languages'
-        );
     }
 
     /**

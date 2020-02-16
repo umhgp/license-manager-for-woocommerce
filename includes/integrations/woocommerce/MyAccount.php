@@ -29,7 +29,7 @@ class MyAccount
      */
     public function accountMenuItems($items)
     {
-        $items['view-license-keys'] = __('License keys', 'lmfwc');
+        $items['view-license-keys'] = __('License keys', 'license-manager-for-woocommerce');
 
         return $items;
     }

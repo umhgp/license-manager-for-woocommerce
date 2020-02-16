@@ -72,7 +72,7 @@ class License
         }
 
         if (!is_array($licenseKeys) || count($licenseKeys) === 0) {
-            AdminNotice::error(__('There was a problem importing the license keys.', 'lmfwc'));
+            AdminNotice::error(__('There was a problem importing the license keys.', 'license-manager-for-woocommerce'));
             wp_redirect(sprintf('admin.php?page=%s&action=import', AdminMenus::LICENSES_PAGE));
             exit();
         }
@@ -90,14 +90,14 @@ class License
                 $_POST['times_activated_max']
             );
         } catch (Exception $e) {
-            AdminNotice::error(__($e->getMessage(), 'lmfwc'));
+            AdminNotice::error(__($e->getMessage(), 'license-manager-for-woocommerce'));
             wp_redirect(sprintf('admin.php?page=%s&action=import', AdminMenus::LICENSES_PAGE));
             exit();
         }
 
         // Redirect according to $result.
         if ($result['failed'] == 0 && $result['added'] == 0) {
-            AdminNotice::error(__('There was a problem importing the license keys.', 'lmfwc'));
+            AdminNotice::error(__('There was a problem importing the license keys.', 'license-manager-for-woocommerce'));
             wp_redirect(sprintf('admin.php?page=%s&action=import', AdminMenus::LICENSES_PAGE));
             exit();
         }
@@ -111,7 +111,7 @@ class License
             // Display a success message
             AdminNotice::success(
                 sprintf(
-                    __('%d license key(s) added successfully.', 'lmfwc'),
+                    __('%d license key(s) added successfully.', 'license-manager-for-woocommerce'),
                     intval($result['added'])
                 )
             );
@@ -120,7 +120,7 @@ class License
         }
 
         if ($result['failed'] > 0 && $result['added'] == 0) {
-            AdminNotice::error(__('There was a problem importing the license keys.', 'lmfwc'));
+            AdminNotice::error(__('There was a problem importing the license keys.', 'license-manager-for-woocommerce'));
             wp_redirect(sprintf('admin.php?page=%s&action=import', AdminMenus::LICENSES_PAGE));
             exit();
         }
@@ -134,7 +134,7 @@ class License
             // Display a warning message
             AdminNotice::warning(
                 sprintf(
-                    __('%d key(s) have been imported, while %d key(s) were not imported.', 'lmfwc'),
+                    __('%d key(s) have been imported, while %d key(s) were not imported.', 'license-manager-for-woocommerce'),
                     intval($result['added']),
                     intval($result['failed'])
                 )
@@ -187,7 +187,7 @@ class License
         }
 
         if (apply_filters('lmfwc_duplicate', $_POST['license_key'])) {
-            AdminNotice::error(__('The license key already exists.', 'lmfwc'));
+            AdminNotice::error(__('The license key already exists.', 'license-manager-for-woocommerce'));
             wp_redirect(sprintf('admin.php?page=%s&action=add', AdminMenus::LICENSES_PAGE));
             exit;
         }
@@ -210,7 +210,7 @@ class License
 
         // Redirect with message
         if ($license) {
-            AdminNotice::success(__('1 license key(s) added successfully.', 'lmfwc'));
+            AdminNotice::success(__('1 license key(s) added successfully.', 'license-manager-for-woocommerce'));
 
             // Update the stock
             if ($license->getStatus() == LicenseStatusEnum::ACTIVE) {
@@ -219,7 +219,7 @@ class License
         }
 
         else {
-            AdminNotice::error(__('There was a problem adding the license key.', 'lmfwc'));
+            AdminNotice::error(__('There was a problem adding the license key.', 'license-manager-for-woocommerce'));
         }
 
         wp_redirect(sprintf('admin.php?page=%s&action=add', AdminMenus::LICENSES_PAGE));
@@ -276,7 +276,7 @@ class License
 
         // Check for duplicates
         if (apply_filters('lmfwc_duplicate', $_POST['license_key'], $licenseId)) {
-            AdminNotice::error(__('The license key already exists.', 'lmfwc'));
+            AdminNotice::error(__('The license key already exists.', 'license-manager-for-woocommerce'));
             wp_redirect(sprintf('admin.php?page=%s&action=edit&id=%d', AdminMenus::LICENSES_PAGE, $licenseId));
             exit;
         }
@@ -310,12 +310,12 @@ class License
             }
 
             // Display a success message
-            AdminNotice::success(__('Your license key has been updated successfully.', 'lmfwc'));
+            AdminNotice::success(__('Your license key has been updated successfully.', 'license-manager-for-woocommerce'));
         }
 
         else {
             //Display an error message
-            AdminNotice::error(__('There was a problem updating the license key.', 'lmfwc'));
+            AdminNotice::error(__('There was a problem updating the license key.', 'license-manager-for-woocommerce'));
         }
 
         wp_redirect(sprintf('admin.php?page=%s&action=edit&id=%d', AdminMenus::LICENSES_PAGE, $licenseId));
@@ -331,7 +331,7 @@ class License
         check_ajax_referer('lmfwc_show_license_key', 'show');
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            wp_die(__('Invalid request.', 'lmfwc'));
+            wp_die(__('Invalid request.', 'license-manager-for-woocommerce'));
         }
 
         /** @var LicenseResourceModel $license */
@@ -351,7 +351,7 @@ class License
         check_ajax_referer('lmfwc_show_all_license_keys', 'show_all');
 
         if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-            wp_die(__('Invalid request.', 'lmfwc'));
+            wp_die(__('Invalid request.', 'license-manager-for-woocommerce'));
         }
 
         $licenseKeysIds = array();

@@ -19,13 +19,13 @@ defined('ABSPATH') || exit;
 
     <nav class="nav-tab-wrapper woo-nav-tab-wrapper">
         <a href="<?php echo esc_url($urlGeneral); ?>" class="nav-tab <?=$tab === 'general' ? 'nav-tab-active' : '';?>">
-            <span><?php esc_html_e('General', 'lmfwc');?></span>
+            <span><?php esc_html_e('General', 'license-manager-for-woocommerce');?></span>
         </a>
         <a href="<?php echo esc_url($urlOrderStatus); ?>" class="nav-tab <?=$tab === 'order_status' ? 'nav-tab-active' : '';?>">
-            <span><?php esc_html_e('Order status', 'lmfwc');?></span>
+            <span><?php esc_html_e('Order status', 'license-manager-for-woocommerce');?></span>
         </a>
         <a href="<?php echo esc_url($urlRestApi); ?>" class="nav-tab <?=$tab === 'rest_api' ? 'nav-tab-active' : '';?>">
-            <span><?php esc_html_e('REST API keys', 'lmfwc');?></span>
+            <span><?php esc_html_e('REST API keys', 'license-manager-for-woocommerce');?></span>
         </a>
     </nav>
 

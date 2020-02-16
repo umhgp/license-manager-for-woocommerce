@@ -287,7 +287,7 @@ class Order
         global $post;
 
         if (!empty(LicenseResourceRepository::instance()->findAllBy(array('order_id' => $post->ID)))) {
-            $actions['lmfwc_send_license_keys'] = __('Send license key(s) to customer', 'lmfwc');
+            $actions['lmfwc_send_license_keys'] = __('Send license key(s) to customer', 'license-manager-for-woocommerce');
         }
 
         return $actions;
@@ -320,7 +320,7 @@ class Order
             return;
         }
 
-        $html = sprintf('<p>%s:</p>', __('The following license keys have been sold by this order', 'lmfwc'));
+        $html = sprintf('<p>%s:</p>', __('The following license keys have been sold by this order', 'license-manager-for-woocommerce'));
         $html .= '<ul class="lmfwc-license-list">';
 
         if (!Settings::get('lmfwc_hide_license_keys')) {
@@ -334,7 +334,7 @@ class Order
 
             $html .= '</ul>';
 
-            $html .= '<span class="lmfwc-txt-copied-to-clipboard" style="display: none">' . __('Copied to clipboard', 'lmfwc') . '</span>';
+            $html .= '<span class="lmfwc-txt-copied-to-clipboard" style="display: none">' . __('Copied to clipboard', 'license-manager-for-woocommerce') . '</span>';
         }
 
         else {
@@ -352,22 +352,22 @@ class Order
             $html .= sprintf(
                 '<a class="button lmfwc-license-keys-show-all" data-order-id="%d">%s</a>',
                 $item->get_order_id(),
-                __('Show license key(s)', 'lmfwc')
+                __('Show license key(s)', 'license-manager-for-woocommerce')
             );
 
             $html .= sprintf(
                 '<a class="button lmfwc-license-keys-hide-all" data-order-id="%d">%s</a>',
                 $item->get_order_id(),
-                __('Hide license key(s)', 'lmfwc')
+                __('Hide license key(s)', 'license-manager-for-woocommerce')
             );
 
             $html .= sprintf(
                 '<img class="lmfwc-spinner" alt="%s" src="%s">',
-                __('Please wait...', 'lmfwc'),
+                __('Please wait...', 'license-manager-for-woocommerce'),
                 LicensesList::SPINNER_URL
             );
 
-            $html .= '<span class="lmfwc-txt-copied-to-clipboard" style="display: none">' . __('Copied to clipboard', 'lmfwc') . '</span>';
+            $html .= '<span class="lmfwc-txt-copied-to-clipboard" style="display: none">' . __('Copied to clipboard', 'license-manager-for-woocommerce') . '</span>';
 
             $html .= '</p>';
         }

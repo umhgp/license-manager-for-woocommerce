@@ -48,4 +48,4 @@ function lmfwc()
 }
 
 // Global for backwards compatibility.
-$GLOBALS['lmfwc'] = lmfwc();
+$GLOBALS['license-manager-for-woocommerce'] = lmfwc();

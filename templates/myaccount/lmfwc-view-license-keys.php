@@ -24,7 +24,7 @@ use LicenseManagerForWooCommerce\Settings;
 
 defined('ABSPATH') || exit; ?>
 
-<h2><?php _e('Your license keys', 'lmfwc'); ?></h2>
+<h2><?php _e('Your license keys', 'license-manager-for-woocommerce'); ?></h2>
 
 <?php foreach ($licenseKeys as $productId => $licenseKeyData): ?>
     <h3 class="product-name">
@@ -36,9 +36,9 @@ defined('ABSPATH') || exit; ?>
     <table class="shop_table shop_table_responsive my_account_orders">
         <thead>
         <tr>
-            <th class="license-key"><?php _e('License key', 'lmfwc'); ?></th>
-            <th class="activation"><?php _e('Activation status', 'lmfwc'); ?></th>
-            <th class="valid-until"><?php _e('Valid until', 'lmfwc'); ?></th>
+            <th class="license-key"><?php _e('License key', 'license-manager-for-woocommerce'); ?></th>
+            <th class="activation"><?php _e('Activation status', 'license-manager-for-woocommerce'); ?></th>
+            <th class="valid-until"><?php _e('Valid until', 'license-manager-for-woocommerce'); ?></th>
             <th class="actions"></th>
         </tr>
         </thead>
@@ -71,7 +71,7 @@ defined('ABSPATH') || exit; ?>
                             <input type="hidden" name="license" value="<?php echo $license->getDecryptedLicenseKey();?>"/>
                             <input type="hidden" name="action" value="activate">
                             <?php wp_nonce_field('lmfwc_myaccount_activate_license'); ?>
-                            <button class="button" type="submit"><?php _e('Activate', 'lmfwc');?></button>
+                            <button class="button" type="submit"><?php _e('Activate', 'license-manager-for-woocommerce');?></button>
                         </form>
                     <?php endif; ?>
 
@@ -80,11 +80,11 @@ defined('ABSPATH') || exit; ?>
                             <input type="hidden" name="license" value="<?php echo $license->getDecryptedLicenseKey();?>"/>
                             <input type="hidden" name="action" value="deactivate">
                             <?php wp_nonce_field('lmfwc_myaccount_deactivate_license'); ?>
-                            <button class="button" type="submit"><?php _e('Deactivate', 'lmfwc');?></button>
+                            <button class="button" type="submit"><?php _e('Deactivate', 'license-manager-for-woocommerce');?></button>
                         </form>
                     <?php endif; ?>
 
-                    <a href="<?php echo esc_url($order->get_view_order_url()); ?>" class="button view"><?php _e('Order', 'lmfwc');?></a>
+                    <a href="<?php echo esc_url($order->get_view_order_url()); ?>" class="button view"><?php _e('Order', 'license-manager-for-woocommerce');?></a>
                 </td>
             </tr>
         <?php endforeach; ?>

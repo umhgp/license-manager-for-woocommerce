@@ -47,7 +47,6 @@ final class Main extends Singleton
         $this->_defineConstants();
         $this->_initHooks();
 
-        add_action('init', array($this, 'loadPluginTextDomain'));
         add_action('init', array($this, 'init'));
 
         new API\Authentication();
@@ -147,12 +146,12 @@ final class Main extends Singleton
                 'lmfwc_licenses_page_js',
                 'i18n',
                 array(
-                    'placeholderSearchOrders'    => __('Search by order ID or customer email', 'lmfwc'),
-                    'placeholderSearchProducts'  => __('Search by product ID or product name', 'lmfwc'),
-                    'placeholderSearchUsers'     => __('Search by user login, name or email', 'lmfwc'),
-                    'placeholderFilterByOrder'   => __('Filter by order', 'lmfwc'),
-                    'placeholderFilterByProduct' => __('Filter by product', 'lmfwc'),
-                    'placeholderFilterByUser'    => __('Filter by user', 'lmfwc')
+                    'placeholderSearchOrders'    => __('Search by order ID or customer email', 'license-manager-for-woocommerce'),
+                    'placeholderSearchProducts'  => __('Search by product ID or product name', 'license-manager-for-woocommerce'),
+                    'placeholderSearchUsers'     => __('Search by user login, name or email', 'license-manager-for-woocommerce'),
+                    'placeholderFilterByOrder'   => __('Filter by order', 'license-manager-for-woocommerce'),
+                    'placeholderFilterByProduct' => __('Filter by product', 'license-manager-for-woocommerce'),
+                    'placeholderFilterByUser'    => __('Filter by user', 'license-manager-for-woocommerce')
                 )
             );
 
@@ -173,8 +172,8 @@ final class Main extends Singleton
                 'lmfwc_generators_page_js',
                 'i18n',
                 array(
-                    'placeholderSearchOrders'   => __('Search by order ID or customer email', 'lmfwc'),
-                    'placeholderSearchProducts' => __('Search by product ID or product name', 'lmfwc')
+                    'placeholderSearchOrders'   => __('Search by order ID or customer email', 'license-manager-for-woocommerce'),
+                    'placeholderSearchProducts' => __('Search by product ID or product name', 'license-manager-for-woocommerce')
                 )
             );
 
@@ -223,12 +222,12 @@ final class Main extends Singleton
                 'docs' => sprintf(
                     '<a href="%s" target="_blank">%s</a>',
                     'https://www.licensemanager.at/docs/',
-                    __('Documentation', 'lmfwc')
+                    __('Documentation', 'license-manager-for-woocommerce')
                 ),
                 'donate' => sprintf(
                     '<a href="%s" target="_blank">%s</a>',
                     'https://www.licensemanager.at/donate/',
-                    __('Donate', 'lmfwc')
+                    __('Donate', 'license-manager-for-woocommerce')
                 )
             );
 
@@ -260,37 +259,6 @@ final class Main extends Singleton
 
         add_action('admin_enqueue_scripts', array($this, 'adminEnqueueScripts'));
         add_filter('plugin_row_meta', array($this, 'pluginRowMeta'), 10, 2);
-    }
-
-    /**
-     * Adds the i18n translations to the plugin.
-     *
-     * @return void
-     */
-    public function loadPluginTextDomain()
-    {
-        if (function_exists('determine_locale')) {
-            $locale = determine_locale();
-        }
-
-        else {
-            $locale = is_admin() ? get_user_locale() : get_locale();
-        }
-
-        $locale = apply_filters('plugin_locale', $locale, 'lmfwc');
-
-        unload_textdomain('lmfwc');
-
-        load_textdomain(
-            'lmfwc',
-            WP_LANG_DIR . '/plugins/license-manager-for-woocommerce-' . $locale . '.mo'
-        );
-
-        load_plugin_textdomain(
-            'lmfwc',
-            false,
-            plugin_basename(dirname(LMFWC_PLUGIN_FILE)) . '/i18n/languages'
-        );
     }
 
     /**
@@ -336,7 +304,7 @@ final class Main extends Singleton
         add_filter(
             'lmfwc_license_keys_table_heading',
             function($text) {
-                $default = __('Your license key(s)', 'lmfwc');
+                $default = __('Your license key(s)', 'license-manager-for-woocommerce');
 
                 if (!$text) {
                     return $default;
@@ -351,7 +319,7 @@ final class Main extends Singleton
         add_filter(
             'lmfwc_license_keys_table_valid_until',
             function($text) {
-                $default = __('Valid until', 'lmfwc');
+                $default = __('Valid until', 'license-manager-for-woocommerce');
 
                 if (!$text) {
                     return $default;

@@ -56,14 +56,14 @@ class General
                 add_settings_error(
                     'lmfwc_settings_group_general',
                     'lmfwc_stock_update',
-                    sprintf(__('Successfully updated the stock of %d WooCommerce products.', 'lmfwc'), $productsSynchronized),
+                    sprintf(__('Successfully updated the stock of %d WooCommerce products.', 'license-manager-for-woocommerce'), $productsSynchronized),
                     'success'
                 );
             } else {
                 add_settings_error(
                     'lmfwc_settings_group_general',
                     'lmfwc_stock_update',
-                    __('The stock of all WooCommerce products is already synchronized.', 'lmfwc'),
+                    __('The stock of all WooCommerce products is already synchronized.', 'license-manager-for-woocommerce'),
                     'success'
                 );
             }
@@ -82,7 +82,7 @@ class General
         // Add the settings sections.
         add_settings_section(
             'license_keys_section',
-            __('License keys', 'lmfwc'),
+            __('License keys', 'license-manager-for-woocommerce'),
             null,
             'lmfwc_license_keys'
         );
@@ -90,7 +90,7 @@ class General
         // lmfwc_security section fields.
         add_settings_field(
             'lmfwc_hide_license_keys',
-            __('Obscure licenses', 'lmfwc'),
+            __('Obscure licenses', 'license-manager-for-woocommerce'),
             array($this, 'fieldHideLicenseKeys'),
             'lmfwc_license_keys',
             'license_keys_section'
@@ -98,7 +98,7 @@ class General
 
         add_settings_field(
             'lmfwc_auto_delivery',
-            __('Automatic delivery', 'lmfwc'),
+            __('Automatic delivery', 'license-manager-for-woocommerce'),
             array($this, 'fieldAutoDelivery'),
             'lmfwc_license_keys',
             'license_keys_section'
@@ -106,7 +106,7 @@ class General
 
         add_settings_field(
             'lmfwc_allow_duplicates',
-            __('Allow duplicates', 'lmfwc'),
+            __('Allow duplicates', 'license-manager-for-woocommerce'),
             array($this, 'fieldAllowDuplicates'),
             'lmfwc_license_keys',
             'license_keys_section'
@@ -114,7 +114,7 @@ class General
 
         add_settings_field(
             'lmfwc_enable_stock_manager',
-            __('Stock management', 'lmfwc'),
+            __('Stock management', 'license-manager-for-woocommerce'),
             array($this, 'fieldEnableStockManager'),
             'lmfwc_license_keys',
             'license_keys_section'
@@ -131,7 +131,7 @@ class General
         // Add the settings sections.
         add_settings_section(
             'my_account_section',
-            __('My account', 'lmfwc'),
+            __('My account', 'license-manager-for-woocommerce'),
             null,
             'lmfwc_my_account'
         );
@@ -139,7 +139,7 @@ class General
         // lmfwc_my_account section fields.
         add_settings_field(
             'lmfwc_enable_my_account_endpoint',
-            __('Enable "License keys"', 'lmfwc'),
+            __('Enable "License keys"', 'license-manager-for-woocommerce'),
             array($this, 'fieldEnableMyAccountEndpoint'),
             'lmfwc_my_account',
             'my_account_section'
@@ -147,7 +147,7 @@ class General
 
         add_settings_field(
             'lmfwc_allow_users_to_activate',
-            __('User activation', 'lmfwc'),
+            __('User activation', 'license-manager-for-woocommerce'),
             array($this, 'fieldAllowUsersToActivate'),
             'lmfwc_my_account',
             'my_account_section'
@@ -155,7 +155,7 @@ class General
 
         add_settings_field(
             'lmfwc_allow_users_to_deactivate',
-            __('User deactivation', 'lmfwc'),
+            __('User deactivation', 'license-manager-for-woocommerce'),
             array($this, 'fieldAllowUsersToDeactivate'),
             'lmfwc_my_account',
             'my_account_section'
@@ -172,14 +172,14 @@ class General
         // Add the settings sections.
         add_settings_section(
             'lmfwc_rest_api_section',
-            __('REST API', 'lmfwc'),
+            __('REST API', 'license-manager-for-woocommerce'),
             null,
             'lmfwc_rest_api'
         );
 
         add_settings_field(
             'lmfwc_disable_api_ssl',
-            __('API & SSL', 'lmfwc'),
+            __('API & SSL', 'license-manager-for-woocommerce'),
             array($this, 'fieldEnableApiOnNonSsl'),
             'lmfwc_rest_api',
             'lmfwc_rest_api_section'
@@ -187,7 +187,7 @@ class General
 
         add_settings_field(
             'lmfwc_enabled_api_routes',
-            __('Enable/disable API routes', 'lmfwc'),
+            __('Enable/disable API routes', 'license-manager-for-woocommerce'),
             array($this, 'fieldEnabledApiRoutes'),
             'lmfwc_rest_api',
             'lmfwc_rest_api_section'
@@ -212,11 +212,11 @@ class General
             $field,
             checked(true, $value, false)
         );
-        $html .= sprintf('<span>%s</span>', __('Hide license keys in the admin dashboard.', 'lmfwc'));
+        $html .= sprintf('<span>%s</span>', __('Hide license keys in the admin dashboard.', 'license-manager-for-woocommerce'));
         $html .= '</label>';
         $html .= sprintf(
             '<p class="description">%s</p>',
-            __('All license keys will be hidden and only displayed when the \'Show\' action is clicked.', 'lmfwc')
+            __('All license keys will be hidden and only displayed when the \'Show\' action is clicked.', 'license-manager-for-woocommerce')
         );
         $html .= '</fieldset>';
 
@@ -243,12 +243,12 @@ class General
         );
         $html .= sprintf(
             '<span>%s</span>',
-            __('Automatically send license keys when an order is set to \'Complete\'.', 'lmfwc')
+            __('Automatically send license keys when an order is set to \'Complete\'.', 'license-manager-for-woocommerce')
         );
         $html .= '</label>';
         $html .= sprintf(
             '<p class="description">%s</p>',
-            __('If this setting is off, you must manually send out all license keys for completed orders.', 'lmfwc')
+            __('If this setting is off, you must manually send out all license keys for completed orders.', 'license-manager-for-woocommerce')
         );
         $html .= '</fieldset>';
 
@@ -275,7 +275,7 @@ class General
         );
         $html .= sprintf(
             '<span>%s</span>',
-            __('Allow duplicate license keys inside the licenses database table.', 'lmfwc')
+            __('Allow duplicate license keys inside the licenses database table.', 'license-manager-for-woocommerce')
         );
         $html .= '</label>';
 
@@ -303,14 +303,14 @@ class General
             checked(true, $value, false)
         );
 
-        $html .= '<span>' . __('Enable automatic stock management for WooCommerce products.', 'lmfwc') . '</span>';
+        $html .= '<span>' . __('Enable automatic stock management for WooCommerce products.', 'license-manager-for-woocommerce') . '</span>';
         $html .= '</label>';
         $html .= sprintf(
             '<p class="description">%s<br/>1. %s<br/>2. %s<br/>3. %s</p>',
-            __('To use this feature, you also need to enable the following settings at a product level:', 'lmfwc'),
-            __('Inventory &rarr; Manage stock?', 'lmfwc'),
-            __('License Manager &rarr; Sell license keys', 'lmfwc'),
-            __('License Manager &rarr; Sell from stock', 'lmfwc'),
+            __('To use this feature, you also need to enable the following settings at a product level:', 'license-manager-for-woocommerce'),
+            __('Inventory &rarr; Manage stock?', 'license-manager-for-woocommerce'),
+            __('License Manager &rarr; Sell license keys', 'license-manager-for-woocommerce'),
+            __('License Manager &rarr; Sell from stock', 'license-manager-for-woocommerce'),
         );
         $html .= '</fieldset>';
 
@@ -319,9 +319,9 @@ class General
                 <button class="button button-secondary"
                         type="submit"
                         name="lmfwc_stock_synchronize"
-                        value="1">' . __('Synchronize', 'lmfwc') . '</button>
+                        value="1">' . __('Synchronize', 'license-manager-for-woocommerce') . '</button>
                 <p class="description" style="margin-top: 1em;">
-                    ' . __('The "Synchronize" button can be used to manually synchronize the product stock.', 'lmfwc') . '
+                    ' . __('The "Synchronize" button can be used to manually synchronize the product stock.', 'license-manager-for-woocommerce') . '
                 </p>
             </fieldset>
         ';
@@ -349,12 +349,12 @@ class General
         );
         $html .= sprintf(
             '<span>%s</span>',
-            __('Display the \'License keys\' section inside WooCommerce\'s \'My Account\'.', 'lmfwc')
+            __('Display the \'License keys\' section inside WooCommerce\'s \'My Account\'.', 'license-manager-for-woocommerce')
         );
         $html .= '</label>';
         $html .= sprintf(
             '<p class="description">%s</p>',
-            __('You might need to save your permalinks after enabling this option.', 'lmfwc')
+            __('You might need to save your permalinks after enabling this option.', 'license-manager-for-woocommerce')
         );
         $html .= '</fieldset>';
 
@@ -379,12 +379,12 @@ class General
         );
         $html .= sprintf(
             '<span>%s</span>',
-            __('Allow users to activate their license keys.', 'lmfwc')
+            __('Allow users to activate their license keys.', 'license-manager-for-woocommerce')
         );
         $html .= '</label>';
         $html .= sprintf(
             '<p class="description">%s</p>',
-            __('The option will be visible from the \'License keys\' section inside WooCommerce\'s \'My Account\'', 'lmfwc')
+            __('The option will be visible from the \'License keys\' section inside WooCommerce\'s \'My Account\'', 'license-manager-for-woocommerce')
         );
         $html .= '</fieldset>';
 
@@ -409,12 +409,12 @@ class General
         );
         $html .= sprintf(
             '<span>%s</span>',
-            __('Allow users to deactivate their license keys.', 'lmfwc')
+            __('Allow users to deactivate their license keys.', 'license-manager-for-woocommerce')
         );
         $html .= '</label>';
         $html .= sprintf(
             '<p class="description">%s</p>',
-            __('The option will be visible from the \'License keys\' section inside WooCommerce\'s \'My Account\'', 'lmfwc')
+            __('The option will be visible from the \'License keys\' section inside WooCommerce\'s \'My Account\'', 'license-manager-for-woocommerce')
         );
         $html .= '</fieldset>';
 
@@ -441,12 +441,12 @@ class General
         );
         $html .= sprintf(
             '<span>%s</span>',
-            __('Enable the plugin API routes over insecure HTTP connections.', 'lmfwc')
+            __('Enable the plugin API routes over insecure HTTP connections.', 'license-manager-for-woocommerce')
         );
         $html .= '</label>';
         $html .= sprintf(
             '<p class="description">%s</p>',
-            __('This should only be activated for development purposes.', 'lmfwc')
+            __('This should only be activated for development purposes.', 'license-manager-for-woocommerce')
         );
         $html .= '</fieldset>';
 
@@ -563,7 +563,7 @@ class General
             if (true === $route['deprecated']) {
                 $html .= sprintf(
                     '<code class="text-info"><b>%s</b></code>',
-                    strtoupper(__('Deprecated', 'lmfwc'))
+                    strtoupper(__('Deprecated', 'license-manager-for-woocommerce'))
                 );
             }
 
@@ -574,7 +574,7 @@ class General
         $html .= sprintf(
             '<p class="description" style="margin-top: 1em;">%s</p>',
             sprintf(
-                __('The complete <b>API documentation</b> can be found <a href="%s" target="_blank" rel="noopener">here</a>.', 'lmfwc'),
+                __('The complete <b>API documentation</b> can be found <a href="%s" target="_blank" rel="noopener">here</a>.', 'license-manager-for-woocommerce'),
                 'https://www.licensemanager.at/docs/rest-api/'
             )
         );

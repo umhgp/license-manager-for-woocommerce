@@ -50,14 +50,14 @@ class OrderStatus
     {
         add_settings_section(
             'license_key_delivery_section',
-            __('License key delivery', 'lmfwc'),
+            __('License key delivery', 'license-manager-for-woocommerce'),
             null,
             'lmfwc_license_key_delivery'
         );
 
         add_settings_field(
             'lmfwc_license_key_delivery_options',
-            __('Define license key delivery', 'lmfwc'),
+            __('Define license key delivery', 'license-manager-for-woocommerce'),
             array($this, 'fieldLicenseKeyDeliveryOptions'),
             'lmfwc_license_key_delivery',
             'license_key_delivery_section'
@@ -73,8 +73,8 @@ class OrderStatus
 
         $html .= '<thead>';
         $html .= '<tr>';
-        $html .= '<td><strong>' . __('Order status', 'lmfwc') .'</strong></td>';
-        $html .= '<td><strong>' . __('Send', 'lmfwc') .'</strong></td>';
+        $html .= '<td><strong>' . __('Order status', 'license-manager-for-woocommerce') .'</strong></td>';
+        $html .= '<td><strong>' . __('Send', 'license-manager-for-woocommerce') .'</strong></td>';
         $html .= '</tr>';
         $html .= '</thead>';
 

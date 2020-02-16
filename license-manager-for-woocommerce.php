@@ -6,8 +6,6 @@
  * Version: 2.1.2
  * Author: Dražen Bebić
  * Author URI: https://www.licensemanager.at/
- * Text Domain: lmfwc
- * Domain Path: /i18n/languages/
  * Requires at least: 4.7
  * Tested up to: 5.3
  * Requires PHP: 5.6
@@ -48,4 +46,4 @@ function lmfwc()
 }
 
 // Global for backwards compatibility.
-$GLOBALS['lmfwc'] = lmfwc();
+$GLOBALS['license-manager-for-woocommerce'] = lmfwc();

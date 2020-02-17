@@ -34,7 +34,7 @@ class Setup
     /**
      * @var int
      */
-    const DB_VERSION = 106;
+    const DB_VERSION = 107;
 
     /**
      * Installation script.
@@ -79,6 +79,8 @@ class Setup
         }
 
         delete_option('lmfwc_settings_general');
+        delete_option('lmfwc_settings_order_status');
+        delete_option('lmfwc_settings_tools');
         delete_option('lmfwc_db_version');
     }
 
@@ -339,10 +341,29 @@ class Setup
                 )
             )
         );
+        $defaultSettingsTools = array(
+            'lmfwc_csv_export_columns' => array(
+                'id'                  => '1',
+                'order_id'            => '1',
+                'product_id'          => '1',
+                'user_id'             => '1',
+                'license_key'         => '1',
+                'expires_at'          => '1',
+                'valid_for'           => '1',
+                'status'              => '1',
+                'times_activated'     => '1',
+                'times_activated_max' => '1',
+                'created_at'          => '1',
+                'created_by'          => '1',
+                'updated_at'          => '1',
+                'updated_by'          => '1',
+            )
+        );
 
         // The defaults for the Setting API.
         update_option('lmfwc_settings_general', $defaultSettingsGeneral);
         update_option('lmfwc_settings_order_status', $defaultSettingsOrderStatus);
+        update_option('lmfwc_settings_tools', $defaultSettingsTools);
         update_option('lmfwc_db_version', self::DB_VERSION);
     }
 }

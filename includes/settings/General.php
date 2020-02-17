@@ -16,7 +16,7 @@ class General
      */
     public function __construct()
     {
-        $this->settings = (array)get_option('lmfwc_settings_general');
+        $this->settings = get_option('lmfwc_settings_general', array());
 
         /**
          * @see https://developer.wordpress.org/reference/functions/register_setting/#parameters

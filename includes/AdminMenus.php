@@ -55,7 +55,7 @@ class AdminMenus
      */
     public function __construct()
     {
-        $this->tabWhitelist = array('general', 'order_status', 'rest_api');
+        $this->tabWhitelist = array('general', 'order_status', 'rest_api', 'tools');
 
         // Plugin pages.
         add_action('admin_menu', array($this, 'createPluginPages'), 9);
@@ -287,73 +287,76 @@ class AdminMenus
         $urlGeneral     = admin_url(sprintf('admin.php?page=%s&tab=general',      self::SETTINGS_PAGE));
         $urlOrderStatus = admin_url(sprintf('admin.php?page=%s&tab=order_status', self::SETTINGS_PAGE));
         $urlRestApi     = admin_url(sprintf('admin.php?page=%s&tab=rest_api',     self::SETTINGS_PAGE));
+        $urlTools       = admin_url(sprintf('admin.php?page=%s&tab=tools',        self::SETTINGS_PAGE));
 
         if ($tab == 'rest_api') {
             if (isset($_GET['create_key'])) {
                 $action = 'create';
-            }
-
-            elseif (isset($_GET['edit_key'])) {
+            } elseif (isset($_GET['edit_key'])) {
                 $action = 'edit';
-            }
-
-            elseif (isset($_GET['show_key'])) {
+            } elseif (isset($_GET['show_key'])) {
                 $action = 'show';
-            }
-
-            else {
+            } else {
                 $action = 'list';
             }
 
-            if ($action === 'create' || $action === 'edit') {
-                $keyId   = 0;
-                $keyData = new ApiKeyResourceModel();
-                $userId  = null;
-                $date    = null;
+            switch ($action) {
+                case 'create':
+                case 'edit':
+                    $keyId   = 0;
+                    $keyData = new ApiKeyResourceModel();
+                    $userId  = null;
+                    $date    = null;
 
-                if (array_key_exists('edit_key', $_GET)) {
-                    $keyId = absint($_GET['edit_key']);
-                }
-
-                if ($keyId !== 0) {
-                    /** @var ApiKeyResourceModel $keyData */
-                    $keyData = ApiKeyResourceRepository::instance()->find($keyId);
-                    $userId  = (int)$keyData->getUserId();
-                    $date = sprintf(
-                        esc_html__('%1$s at %2$s', 'license-manager-for-woocommerce'),
-                        date_i18n(wc_date_format(), strtotime($keyData->getLastAccess())),
-                        date_i18n(wc_time_format(), strtotime($keyData->getLastAccess()))
-                    );
-                }
-
-                $users       = apply_filters('lmfwc_get_users', null);
-                $permissions = array(
-                    'read'       => __('Read', 'license-manager-for-woocommerce'),
-                    'write'      => __('Write', 'license-manager-for-woocommerce'),
-                    'read_write' => __('Read/Write', 'license-manager-for-woocommerce'),
-                );
-
-                if ($keyId && $userId && ! current_user_can('edit_user', $userId)) {
-                    if (get_current_user_id() !== $userId) {
-                        wp_die(esc_html__('You do not have permission to edit this API Key', 'license-manager-for-woocommerce'));
+                    if (array_key_exists('edit_key', $_GET)) {
+                        $keyId = absint($_GET['edit_key']);
                     }
-                }
-            }
 
-            elseif ($action === 'list') {
-                $keys = new APIKeyList();
-            }
+                    if ($keyId !== 0) {
+                        /** @var ApiKeyResourceModel $keyData */
+                        $keyData = ApiKeyResourceRepository::instance()->find($keyId);
+                        $userId  = (int)$keyData->getUserId();
+                        $date = sprintf(
+                            esc_html__('%1$s at %2$s', 'license-manager-for-woocommerce'),
+                            date_i18n(wc_date_format(), strtotime($keyData->getLastAccess())),
+                            date_i18n(wc_time_format(), strtotime($keyData->getLastAccess()))
+                        );
+                    }
 
-            elseif ($action === 'show') {
-                $keyData = get_transient('lmfwc_api_key');
-                $consumerKey = get_transient('lmfwc_consumer_key');
-                delete_transient('lmfwc_api_key');
-                delete_transient('lmfwc_consumer_key');
+                    $users       = apply_filters('lmfwc_get_users', null);
+                    $permissions = array(
+                        'read'       => __('Read', 'license-manager-for-woocommerce'),
+                        'write'      => __('Write', 'license-manager-for-woocommerce'),
+                        'read_write' => __('Read/Write', 'license-manager-for-woocommerce'),
+                    );
+
+                    if ($keyId && $userId && ! current_user_can('edit_user', $userId)) {
+                        if (get_current_user_id() !== $userId) {
+                            wp_die(
+                                esc_html__(
+                                    'You do not have permission to edit this API Key',
+                                    'license-manager-for-woocommerce'
+                                )
+                            );
+                        }
+                    }
+                    break;
+                case 'list':
+                    $keys = new APIKeyList();
+                    break;
+                case 'show':
+                    $keyData     = get_transient('lmfwc_api_key');
+                    $consumerKey = get_transient('lmfwc_consumer_key');
+
+                    delete_transient('lmfwc_api_key');
+                    delete_transient('lmfwc_consumer_key');
+                    break;
             }
 
             // Add screen option.
             add_screen_option(
-                'per_page', array(
+                'per_page',
+                array(
                     'default' => 10,
                     'option'  => 'lmfwc_keys_per_page',
                 )
@@ -404,9 +407,9 @@ class AdminMenus
         if (isset($currentScreen->id) && in_array($currentScreen->id, $this->getPluginPageIDs())) {
             // Change the footer text
             $footerText = sprintf(
-                __( 'If you like %1$s please leave us a %2$s rating. A huge thanks in advance!', 'license-manager-for-woocommerce' ),
-                sprintf( '<strong>%s</strong>', esc_html__( 'License Manager for WooCommerce', 'license-manager-for-woocommerce' ) ),
-                '<a href="https://wordpress.org/support/plugin/license-manager-for-woocommerce/reviews/?rate=5#new-post" target="_blank" class="wc-rating-link" data-rated="' . esc_attr__( 'Thanks :)', 'license-manager-for-woocommerce' ) . '">&#9733;&#9733;&#9733;&#9733;&#9733;</a>'
+                __('If you like %1$s please leave us a %2$s rating. A huge thanks in advance!', 'license-manager-for-woocommerce'),
+                sprintf('<strong>%s</strong>', esc_html__('License Manager for WooCommerce', 'license-manager-for-woocommerce')),
+                '<a href="https://wordpress.org/support/plugin/license-manager-for-woocommerce/reviews/?rate=5#new-post" target="_blank" class="wc-rating-link" data-rated="' . esc_attr__('Thanks :)', 'license-manager-for-woocommerce') . '">&#9733;&#9733;&#9733;&#9733;&#9733;</a>'
             );
         }
 

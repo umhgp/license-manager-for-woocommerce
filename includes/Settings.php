@@ -17,6 +17,11 @@ class Settings
     const SECTION_ORDER_STATUS = 'lmfwc_settings_order_status';
 
     /**
+     * @var string
+     */
+    const SECTION_TOOLS = 'lmfwc_settings_tools';
+
+    /**
      * Settings Constructor.
      */
     public function __construct()
@@ -24,6 +29,7 @@ class Settings
         // Initialize the settings classes
         new Settings\General();
         new Settings\OrderStatus();
+        new Settings\Tools();
     }
 
     /**

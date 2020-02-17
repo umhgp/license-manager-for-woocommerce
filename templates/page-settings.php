@@ -9,6 +9,7 @@ defined('ABSPATH') || exit;
  * @var string $urlGeneral
  * @var string $urlOrderStatus
  * @var string $urlRestApi
+ * @var string $urlTools
  */
 
 ?>
@@ -26,6 +27,9 @@ defined('ABSPATH') || exit;
         </a>
         <a href="<?php echo esc_url($urlRestApi); ?>" class="nav-tab <?=$tab === 'rest_api' ? 'nav-tab-active' : '';?>">
             <span><?php esc_html_e('REST API keys', 'license-manager-for-woocommerce');?></span>
+        </a>
+        <a href="<?php echo esc_url($urlTools); ?>" class="nav-tab <?=$tab === 'tools' ? 'nav-tab-active' : '';?>">
+            <span><?php esc_html_e('Tools', 'license-manager-for-woocommerce');?></span>
         </a>
     </nav>
 
@@ -62,6 +66,14 @@ defined('ABSPATH') || exit;
             <?php include_once 'settings/rest-api-key.php'; ?>
 
         <?php endif; ?>
+
+    <?php elseif ($tab === 'tools'): ?>
+
+        <form action="<?php echo admin_url('options.php'); ?>" method="POST">
+            <?php settings_fields('lmfwc_settings_group_tools'); ?>
+            <?php do_settings_sections('lmfwc_export'); ?>
+            <?php submit_button(); ?>
+        </form>
 
     <?php endif; ?>
 

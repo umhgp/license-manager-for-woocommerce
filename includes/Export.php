@@ -149,8 +149,6 @@ class Export
             );
         }
 
-        $exportColumns = array_keys($columns);
-
         foreach ($licenseKeyIds as $licenseKeyId) {
             /** @var LicenseResourceModel $license */
             $license = LicenseResourceRepository::instance()->find($licenseKeyId);
@@ -160,7 +158,7 @@ class Export
                 continue;
             }
 
-            foreach ($exportColumns as $exportColumn) {
+            foreach (array_keys($columns) as $exportColumn) {
 
                 switch ($exportColumn) {
                     case 'license_key':
@@ -204,7 +202,7 @@ class Export
         ob_clean();
         ob_start();
         $df = fopen("php://output", 'w');
-        fputcsv($df, $exportColumns);
+        fputcsv($df, array_keys($licenseKeys[0]));
 
         foreach ($licenseKeys as $row) {
             fputcsv($df, $row);

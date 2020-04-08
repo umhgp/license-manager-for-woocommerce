@@ -25,7 +25,8 @@ class Order
      */
     public function __construct()
     {
-        add_action('woocommerce_order_status_changed',                 array($this, 'orderStatusChanged'),           10, 3);
+        $this->addOrderStatusHooks();
+
         add_action('woocommerce_order_action_lmfwc_send_license_keys', array($this, 'processSendLicenseKeysAction'), 10, 1);
         add_action('woocommerce_order_details_after_order_table',      array($this, 'showBoughtLicenses'),           10, 1);
         add_filter('woocommerce_order_actions',                        array($this, 'addSendLicenseKeysAction'),     10, 1);
@@ -33,27 +34,38 @@ class Order
     }
 
     /**
-     * Generates licenses when an order is set to complete.
-     *
-     * @param int    $orderId
-     * @param string $oldStatus,
-     * @param string $newStatus
+     * Hooks the license generation method into the woocommerce order status
+     * change hooks.
      */
-    public function orderStatusChanged($orderId, $oldStatus, $newStatus)
+    private function addOrderStatusHooks()
     {
-        $orderStatusSettings = Settings::get(
-            'lmfwc_license_key_delivery_options',
-            Settings::SECTION_ORDER_STATUS
-        );
+        $orderStatusSettings = Settings::get('lmfwc_license_key_delivery_options', Settings::SECTION_ORDER_STATUS);
 
-        // The order status settings haven't been configured for the new status
-        if (empty($orderStatusSettings)
-            || !array_key_exists('wc-' . $newStatus, $orderStatusSettings)
-            || !array_key_exists('send', $orderStatusSettings['wc-' . $newStatus])
-        ) {
+        // The order status settings haven't been configured.
+        if (empty($orderStatusSettings)) {
             return;
         }
 
+        foreach ($orderStatusSettings as $status => $settings) {
+            if (array_key_exists('send', $settings)) {
+                $value = filter_var($settings['send'], FILTER_VALIDATE_BOOLEAN);
+
+                if ($value) {
+                    $filterStatus = str_replace('wc-', '', $status);
+
+                    add_action('woocommerce_order_status_' . $filterStatus, array($this, 'generateOrderLicenses'));
+                }
+            }
+        }
+    }
+
+    /**
+     * Generates licenses for an order.
+     *
+     * @param int $orderId
+     */
+    public function generateOrderLicenses($orderId)
+    {
         // Keys have already been generated for this order.
         if (get_post_meta($orderId, 'lmfwc_order_complete')) {
             return;

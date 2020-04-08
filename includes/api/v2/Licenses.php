@@ -185,6 +185,16 @@ class Licenses extends LMFWC_REST_Controller
             return $this->routeDisabledError();
         }
 
+        if (!$this->permissionCheck('license', 'read')) {
+            return new WP_Error(
+                'lmfwc_rest_cannot_view',
+                __('Sorry, you cannot list resources.', 'license-manager-for-woocommerce'),
+                array(
+                    'status' => $this->authorizationRequiredCode()
+                )
+            );
+        }
+
         try {
             /** @var LicenseResourceModel[] $licenses */
             $licenses = LicenseResourceRepository::instance()->findAll();
@@ -230,6 +240,16 @@ class Licenses extends LMFWC_REST_Controller
     {
         if (!$this->isRouteEnabled($this->settings, '011')) {
             return $this->routeDisabledError();
+        }
+
+        if (!$this->permissionCheck('license', 'read')) {
+            return new WP_Error(
+                'lmfwc_rest_cannot_view',
+                __('Sorry, you cannot view this resource.', 'license-manager-for-woocommerce'),
+                array(
+                    'status' => $this->authorizationRequiredCode()
+                )
+            );
         }
 
         $licenseKey = sanitize_text_field($request->get_param('license_key'));
@@ -289,6 +309,16 @@ class Licenses extends LMFWC_REST_Controller
     {
         if (!$this->isRouteEnabled($this->settings, '012')) {
             return $this->routeDisabledError();
+        }
+
+        if (!$this->permissionCheck('license', 'create')) {
+            return new WP_Error(
+                'lmfwc_rest_cannot_create',
+                __('Sorry, you are not allowed to create resources.', 'license-manager-for-woocommerce'),
+                array(
+                    'status' => $this->authorizationRequiredCode()
+                )
+            );
         }
 
         $body = $request->get_params();
@@ -403,6 +433,16 @@ class Licenses extends LMFWC_REST_Controller
     {
         if (!$this->isRouteEnabled($this->settings, '013')) {
             return $this->routeDisabledError();
+        }
+
+        if (!$this->permissionCheck('license', 'edit')) {
+            return new WP_Error(
+                'lmfwc_rest_cannot_edit',
+                __('Sorry, you are not allowed to edit resources.', 'license-manager-for-woocommerce'),
+                array(
+                    'status' => $this->authorizationRequiredCode()
+                )
+            );
         }
 
         $body      = null;
@@ -535,6 +575,16 @@ class Licenses extends LMFWC_REST_Controller
             return $this->routeDisabledError();
         }
 
+        if (!$this->permissionCheck('license', 'edit')) {
+            return new WP_Error(
+                'lmfwc_rest_cannot_edit',
+                __('Sorry, you are not allowed to edit this resource.', 'license-manager-for-woocommerce'),
+                array(
+                    'status' => $this->authorizationRequiredCode()
+                )
+            );
+        }
+
         $licenseKey = sanitize_text_field($request->get_param('license_key'));
 
         if (!$licenseKey) {
@@ -640,6 +690,16 @@ class Licenses extends LMFWC_REST_Controller
             return $this->routeDisabledError();
         }
 
+        if (!$this->permissionCheck('license', 'edit')) {
+            return new WP_Error(
+                'lmfwc_rest_cannot_edit',
+                __('Sorry, you are not allowed to edit this resource.', 'license-manager-for-woocommerce'),
+                array(
+                    'status' => $this->authorizationRequiredCode()
+                )
+            );
+        }
+
         $licenseKey = sanitize_text_field($request->get_param('license_key'));
 
         if (!$licenseKey) {
@@ -733,6 +793,16 @@ class Licenses extends LMFWC_REST_Controller
     {
         if (!$this->isRouteEnabled($this->settings, '016')) {
             return $this->routeDisabledError();
+        }
+
+        if (!$this->permissionCheck('license', 'read')) {
+            return new WP_Error(
+                'lmfwc_rest_cannot_view',
+                __('Sorry, you cannot view this resource.', 'license-manager-for-woocommerce'),
+                array(
+                    'status' => $this->authorizationRequiredCode()
+                )
+            );
         }
 
         $urlParams = $request->get_url_params();

@@ -123,6 +123,17 @@ class Generators extends LMFWC_REST_Controller
             return $this->routeDisabledError();
         }
 
+        if (!$this->permissionCheck('generator', 'read')) {
+            return new WP_Error(
+                'lmfwc_rest_cannot_view',
+                __('Sorry, you cannot list resources.', 'license-manager-for-woocommerce'),
+                array(
+                    'status' => $this->authorizationRequiredCode()
+                )
+            );
+        }
+
+
         try {
             /** @var GeneratorResourceModel[] $generator */
             $generators = GeneratorResourceRepository::instance()->findAll();
@@ -163,6 +174,16 @@ class Generators extends LMFWC_REST_Controller
     {
         if (!$this->isRouteEnabled($this->settings, '018')) {
             return $this->routeDisabledError();
+        }
+
+        if (!$this->permissionCheck('generator', 'read')) {
+            return new WP_Error(
+                'lmfwc_rest_cannot_view',
+                __('Sorry, you cannot view this resource.', 'license-manager-for-woocommerce'),
+                array(
+                    'status' => $this->authorizationRequiredCode()
+                )
+            );
         }
 
         $generatorId = absint($request->get_param('generator_id'));
@@ -211,6 +232,16 @@ class Generators extends LMFWC_REST_Controller
     {
         if (!$this->isRouteEnabled($this->settings, '019')) {
             return $this->routeDisabledError();
+        }
+
+        if (!$this->permissionCheck('generator', 'create')) {
+            return new WP_Error(
+                'lmfwc_rest_cannot_create',
+                __('Sorry, you are not allowed to create resources.', 'license-manager-for-woocommerce'),
+                array(
+                    'status' => $this->authorizationRequiredCode()
+                )
+            );
         }
 
         $body = $request->get_params();
@@ -302,6 +333,16 @@ class Generators extends LMFWC_REST_Controller
     {
         if (!$this->isRouteEnabled($this->settings, '020')) {
             return $this->routeDisabledError();
+        }
+
+        if (!$this->permissionCheck('generator', 'edit')) {
+            return new WP_Error(
+                'lmfwc_rest_cannot_edit',
+                __('Sorry, you are not allowed to edit resources.', 'license-manager-for-woocommerce'),
+                array(
+                    'status' => $this->authorizationRequiredCode()
+                )
+            );
         }
 
         $body        = null;

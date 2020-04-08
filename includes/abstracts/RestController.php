@@ -108,4 +108,34 @@ class RestController extends WP_REST_Controller
 
         return $status;
     }
+
+    /**
+     * Checks if the current user can access the requested route.
+     *
+     * @param string $object  "license" or "generator"
+     * @param string $context "read", "edit", "create", "delete", or "batch"
+     *
+     * @return bool
+     */
+    protected function permissionCheck($object, $context = 'read')
+    {
+        $objects = array(
+            'license'   => 'manage_options',
+            'generator' => 'manage_options'
+        );
+
+        $permission = current_user_can($objects[$object]);
+
+        return apply_filters('lmfwc_rest_check_permissions', $permission, $context, $object);
+    }
+
+    /**
+     * Returns a contextual HTTP error code for authorization failure.
+     *
+     * @return int
+     */
+    protected function authorizationRequiredCode()
+    {
+        return is_user_logged_in() ? 403 : 401;
+    }
 }

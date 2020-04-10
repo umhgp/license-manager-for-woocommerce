@@ -1,3 +1,30 @@
+##### 2.2.0 - 2020-04-10
+* Add - Functions for license operations: `lmfwc_add_license()`, `lmfwc_get_license()`, `lmfwc_update_license()`, `lmfwc_delete_license()`, `lmfwc_activate_license()`, and `lmfwc_deactivate_license()`
+* Add - Maximum activation count (`times_activated_max`) now allows for unlimited activations if the value is left empty (`null`)
+* Add - It is now possible to select on which order status changes licenses will be generated ("Completed", "Processing", etc.)
+* Add - Customers can now activate and deactivate their license keys inside "My Account" if the setting is enabled.
+* Add - The "allow duplicate license keys" setting has been added.
+* Add - STOPPED AT MERGE PULL REQUEST #740
+* Add - A "User ID" field has been added on the license key level. Add/Import forms and REST route have been updated to allow for this new parameter.
+* Add - User ID automatically gets assigned to a license key when a customer purchases said license key.
+* Add - Automatic stock management. License key stock will now automatically be adjusted when adding, deleting, and selling license keys. Can be turned off via the settings.
+* Add - The License table columns can now be expanded via the following filters:  `lmfwc_table_licenses_column_name`, `lmfwc_table_licenses_column_value`, and `lmfwc_table_licenses_column_sortable`
+* Add - The CSV export can now be customized via the settings.
+* Add - The CSV export can also be customized with the following filter: `lmfwc_export_license_csv`.
+* Add - Permissions to REST API routes. Currently, all REST API routes require the `manage_options` permission for both objects (licenses and generators). Can be customized with the following filter: `lmfwc_rest_check_permissions`
+* Fix - the `lmfwc_rest_api_validation` filter has been fixed.
+* Fix - The plugin will no longer throw PHP errors or notices on the "Licenses" page inside "My Account" when a product is missing.
+* Fix - Fix the Show/Hide/Copy buttons for variable products and other scenarios.
+* Fix - On the "Licenses" page, the order filter dropdown now displays the order sorted by the order ID, in a descending manner.
+* Fix - When selling existing license keys, the "Expires at" field will be preserved after purchase.
+* Fix - Product data is now being properly saved for variable products.
+* Fix - The text domain is now properly set to `license-manager-for-woocommerce`. Thanks to @sebastienserre for pointing this out and fixing it!
+* Tweak - Removed the legacy V1 API routes.
+* Tweak - Updated the database tables structure.
+* Tweak - Searchable dropdown fields (select2) added to the license page filters.
+* Tweak - The admin notices class has been reworked and now supports multiple notices.
+* Tweak - Refactored the abstract resource repository.
+
 ##### 2.1.2 - 2019-12-09
 * Add - The plugin now checks the PHP version upon activation. If the version is on/below 5.3.29, the plugin will not activate.
 * Add - `lmfwc_event_post_order_license_keys` event action has been added. You can hook-in with the `add_action()` function.

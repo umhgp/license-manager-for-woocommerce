@@ -11,20 +11,22 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 Easily sell and manage software license keys through your WooCommerce shop
 
 == Description ==
-The **License Manager for WooCommerce** allows you to easily sell and manage all of your digital license keys. With features like the bulk importer, automatic delivery, and database encryption, your shop will now run easier than ever.
+The **License Manager for WooCommerce** allows you to easily sell and manage all of your digital license keys. With features like the bulk importer, automatic delivery, automatic stock management, and database encryption, your shop will now run easier than ever.
 
 [Plugin & API Documentation](https://www.licensemanager.at/docs)
 
 #### Key plugin features
 
 * Automatically sell and deliver license keys through WooCommerce
+* Automatically manage the stock for licensed products
+* Activate, deactivate, and check your licenses through the REST API
 * Manually resend license keys
-* Add a single license key and assign it to a specific product
-* Add multiple license keys (by file upload) and assign them to a specific product
+* Add and import license keys and assign them to WooCommerce products
+* Import license keys by file upload
 * Export license keys as PDF or CSV
 * Manage the status of your license keys
 * Create license key generators with custom parameters
-* Assign a generator to one (or more!) WooCommerce product(s), these products then automatically create a license key whenever they are sold
+* Assign a generator to one (or more!) WooCommerce product(s), these products then automatically create a license key whenever they are sold.
 
 #### API
 
@@ -69,6 +71,18 @@ Yes, there is! An extensive documentation describing the plugin features and fun
 
 Again, yes! Here you can find the [API Documentation](https://www.licensemanager.at/docs/rest-api/v2/) detailing all the new endpoint requests and responses. Have fun!
 
+= Does the plugin work with variable products? =
+
+Yes, the plugin can assign licenses or generators to individual product variations.
+
+= Can I sell my own license keys with this plugin? =
+
+Yes, the plugin allows you to import an existing list of license keys via the file upload (CSV or TXT).
+
+= Can I use this plugin to provide a licensing system for my own software? =
+
+Of course! The plugin comes with REST API routes which allow you to activate, deactivate, and validate license keys.
+
 == Screenshots ==
 
 1. The license key overview page.
@@ -80,13 +94,6 @@ Again, yes! Here you can find the [API Documentation](https://www.licensemanager
 7. Create a new license key generator.
 
 == Changelog ==
-
-= 2.1.2 - 2019-12-09 =
-* Add - The plugin now checks the PHP version upon activation. If the version is on/below 5.3.29, the plugin will not activate.
-* Add - `lmfwc_event_post_order_license_keys` event action has been added. You can hook-in with the `add_action()` function.
-* Fix - Removed the "public" properties from the class constants.
-* Fix - Column screen options now work for the license and generator pages.
-* Fix - Timestamps are now properly converted and displayed on the licenses page.
 
 [See changelog for all versions](https://raw.githubusercontent.com/drazenbebic/license-manager-for-woocommerce/master/CHANGELOG.md).
 

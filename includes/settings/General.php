@@ -310,7 +310,7 @@ class General
             __('To use this feature, you also need to enable the following settings at a product level:', 'license-manager-for-woocommerce'),
             __('Inventory &rarr; Manage stock?', 'license-manager-for-woocommerce'),
             __('License Manager &rarr; Sell license keys', 'license-manager-for-woocommerce'),
-            __('License Manager &rarr; Sell from stock', 'license-manager-for-woocommerce'),
+            __('License Manager &rarr; Sell from stock', 'license-manager-for-woocommerce')
         );
         $html .= '</fieldset>';
 

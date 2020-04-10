@@ -33,8 +33,6 @@ function lmfwc_duplicate($licenseKey, $licenseKeyId = null)
 
     // Update action
     elseif ($licenseKeyId !== null && is_numeric($licenseKeyId)) {
-        global $wpdb;
-
         $table = LicenseResourceRepository::instance()->getTable();
 
         $query = "
@@ -78,4 +76,17 @@ function lmfwc_rand_hash()
     }
 
     return bin2hex(openssl_random_pseudo_bytes(20));
+}
+
+/**
+ * Converts dashes to camel case with first capital letter.
+ *
+ * @param string $input
+ * @param string $separator
+ *
+ * @return string|string[]
+ */
+function lmfwc_camelize($input, $separator = '_')
+{
+    return str_replace($separator, '', ucwords($input, $separator));
 }

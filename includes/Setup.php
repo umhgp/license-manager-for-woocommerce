@@ -34,12 +34,13 @@ class Setup
     /**
      * @var int
      */
-    const DB_VERSION = 104;
+    const DB_VERSION = 107;
 
     /**
      * Installation script.
      *
      * @throws EnvironmentIsBrokenException
+     * @throws Exception
      */
     public static function install()
     {
@@ -78,6 +79,8 @@ class Setup
         }
 
         delete_option('lmfwc_settings_general');
+        delete_option('lmfwc_settings_order_status');
+        delete_option('lmfwc_settings_tools');
         delete_option('lmfwc_db_version');
     }
 
@@ -127,41 +130,42 @@ class Setup
 
         dbDelta("
             CREATE TABLE IF NOT EXISTS $table1 (
-                `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-                `order_id` BIGINT(20) NULL DEFAULT NULL,
-                `product_id` BIGINT(20) NULL DEFAULT NULL,
+                `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+                `order_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
+                `product_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
+                `user_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
                 `license_key` LONGTEXT NOT NULL,
                 `hash` LONGTEXT NOT NULL,
                 `expires_at` DATETIME NULL DEFAULT NULL,
-                `valid_for` INT(32) NULL DEFAULT NULL,
+                `valid_for` INT(32) UNSIGNED NULL DEFAULT NULL,
                 `source` VARCHAR(255) NOT NULL,
-                `status` TINYINT(1) NOT NULL,
-                `times_activated` INT(10) NULL DEFAULT NULL,
-                `times_activated_max` INT(10) NULL DEFAULT NULL,
+                `status` TINYINT(1) UNSIGNED NOT NULL,
+                `times_activated` INT(10) UNSIGNED NULL DEFAULT NULL,
+                `times_activated_max` INT(10) UNSIGNED NULL DEFAULT NULL,
                 `created_at` DATETIME NULL,
-                `created_by` BIGINT(20) NULL DEFAULT NULL,
+                `created_by` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
                 `updated_at` DATETIME NULL DEFAULT NULL,
-                `updated_by` BIGINT(20) NULL DEFAULT NULL,
+                `updated_by` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
                 PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
         ");
 
         dbDelta("
             CREATE TABLE IF NOT EXISTS $table2 (
-                `id` INT(20) NOT NULL AUTO_INCREMENT,
+                `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
                 `name` VARCHAR(255) NOT NULL,
                 `charset` VARCHAR(255) NOT NULL,
-                `chunks` INT(10) NOT NULL,
-                `chunk_length` INT(10) NOT NULL,
-                `times_activated_max` INT(10) NULL DEFAULT NULL,
+                `chunks` INT(10) UNSIGNED NOT NULL,
+                `chunk_length` INT(10) UNSIGNED NOT NULL,
+                `times_activated_max` INT(10) UNSIGNED NULL DEFAULT NULL,
                 `separator` VARCHAR(255) NULL DEFAULT NULL,
                 `prefix` VARCHAR(255) NULL DEFAULT NULL,
                 `suffix` VARCHAR(255) NULL DEFAULT NULL,
-                `expires_in` INT(10) NULL DEFAULT NULL,
+                `expires_in` INT(10) UNSIGNED NULL DEFAULT NULL,
                 `created_at` DATETIME NULL,
-                `created_by` BIGINT(20) NULL DEFAULT NULL,
+                `created_by` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
                 `updated_at` DATETIME NULL DEFAULT NULL,
-                `updated_by` BIGINT(20) NULL DEFAULT NULL,
+                `updated_by` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
                 PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
         ");
@@ -178,9 +182,9 @@ class Setup
                 `truncated_key` CHAR(7) NOT NULL,
                 `last_access` DATETIME NULL DEFAULT NULL,
                 `created_at` DATETIME NULL,
-                `created_by` BIGINT(20) NULL DEFAULT NULL,
+                `created_by` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
                 `updated_at` DATETIME NULL DEFAULT NULL,
-                `updated_by` BIGINT(20) NULL DEFAULT NULL,
+                `updated_by` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
                 PRIMARY KEY (`id`),
                 INDEX `consumer_key` (`consumer_key`),
                 INDEX `consumer_secret` (`consumer_secret`)
@@ -194,9 +198,9 @@ class Setup
                 `meta_key` VARCHAR(255) NULL,
                 `meta_value` LONGTEXT NULL,
                 `created_at` DATETIME NULL,
-                `created_by` BIGINT(20) NULL DEFAULT NULL,
+                `created_by` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
                 `updated_at` DATETIME NULL DEFAULT NULL,
-                `updated_by` BIGINT(20) NULL DEFAULT NULL,
+                `updated_by` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
                 PRIMARY KEY (`meta_id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8
         ");
@@ -330,9 +334,36 @@ class Setup
                 '020' => '1'
             )
         );
+        $defaultSettingsOrderStatus = array(
+            'lmfwc_license_key_delivery_options' => array(
+                'wc-completed' => array(
+                    'send' => '1'
+                )
+            )
+        );
+        $defaultSettingsTools = array(
+            'lmfwc_csv_export_columns' => array(
+                'id'                  => '1',
+                'order_id'            => '1',
+                'product_id'          => '1',
+                'user_id'             => '1',
+                'license_key'         => '1',
+                'expires_at'          => '1',
+                'valid_for'           => '1',
+                'status'              => '1',
+                'times_activated'     => '1',
+                'times_activated_max' => '1',
+                'created_at'          => '1',
+                'created_by'          => '1',
+                'updated_at'          => '1',
+                'updated_by'          => '1',
+            )
+        );
 
         // The defaults for the Setting API.
         update_option('lmfwc_settings_general', $defaultSettingsGeneral);
+        update_option('lmfwc_settings_order_status', $defaultSettingsOrderStatus);
+        update_option('lmfwc_settings_tools', $defaultSettingsTools);
         update_option('lmfwc_db_version', self::DB_VERSION);
     }
 }

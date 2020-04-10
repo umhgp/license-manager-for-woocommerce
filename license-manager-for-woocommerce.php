@@ -6,13 +6,11 @@
  * Version: 2.1.2
  * Author: Dražen Bebić
  * Author URI: https://www.licensemanager.at/
- * Text Domain: lmfwc
- * Domain Path: /i18n/languages/
  * Requires at least: 4.7
- * Tested up to: 5.3
+ * Tested up to: 5.4
  * Requires PHP: 5.6
  * WC requires at least: 2.7
- * WC tested up to: 3.8
+ * WC tested up to: 4.0
  */
 
 namespace LicenseManagerForWooCommerce;
@@ -20,8 +18,9 @@ namespace LicenseManagerForWooCommerce;
 defined('ABSPATH') || exit;
 
 require_once __DIR__ . '/vendor/autoload.php';
-require_once __DIR__ . '/includes/functions/lmfwc-core-functions.php';
-require_once __DIR__ . '/includes/functions/lmfwc-meta-functions.php';
+require_once __DIR__ . '/functions/lmfwc-core-functions.php';
+require_once __DIR__ . '/functions/lmfwc-license-functions.php';
+require_once __DIR__ . '/functions/lmfwc-meta-functions.php';
 
 // Define LMFWC_PLUGIN_FILE.
 if (!defined('LMFWC_PLUGIN_FILE')) {
@@ -47,4 +46,4 @@ function lmfwc()
 }
 
 // Global for backwards compatibility.
-$GLOBALS['lmfwc'] = lmfwc();
+$GLOBALS['license-manager-for-woocommerce'] = lmfwc();

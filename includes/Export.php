@@ -3,7 +3,6 @@
 namespace LicenseManagerForWooCommerce;
 
 use FPDF;
-use LicenseManagerForWooCommerce\Enums\LicenseSource;
 use LicenseManagerForWooCommerce\Enums\LicenseStatus;
 use LicenseManagerForWooCommerce\Models\Resources\License as LicenseResourceModel;
 use LicenseManagerForWooCommerce\Repositories\Resources\License as LicenseResourceRepository;
@@ -23,7 +22,7 @@ class Export
 
     /**
      * Creates a PDF of license keys by the given array of ID's.
-     * 
+     *
      * @param array $licenseKeyIds
      */
     public function exportLicenseKeysPdf($licenseKeyIds)
@@ -47,10 +46,10 @@ class Export
         }
 
         $header = array(
-            'id'          => __('ID', 'lmfwc'),
-            'order_id'    => __('Order ID', 'lmfwc'),
-            'product_id'  => __('Product ID', 'lmfwc'),
-            'license_key' => __('License key', 'lmfwc')
+            'id'          => __('ID', 'license-manager-for-woocommerce'),
+            'order_id'    => __('Order ID', 'license-manager-for-woocommerce'),
+            'product_id'  => __('Product ID', 'license-manager-for-woocommerce'),
+            'license_key' => __('License key', 'license-manager-for-woocommerce')
         );
 
         ob_clean();
@@ -123,56 +122,90 @@ class Export
 
     /**
      * Creates a CSV of license keys by the given array of ID's.
-     * 
+     *
      * @param array $licenseKeyIds
      */
     public function exportLicenseKeysCsv($licenseKeyIds)
     {
         $licenseKeys = array();
 
+        // Should no columns be defined, we will export all of them
+        if (!$columns = Settings::get('lmfwc_csv_export_columns', Settings::SECTION_TOOLS)) {
+            $columns = array(
+                'id'                  => true,
+                'order_id'            => true,
+                'product_id'          => true,
+                'user_id'             => true,
+                'license_key'         => true,
+                'expires_at'          => true,
+                'valid_for'           => true,
+                'status'              => true,
+                'times_activated'     => true,
+                'times_activated_max' => true,
+                'created_at'          => true,
+                'created_by'          => true,
+                'updated_at'          => true,
+                'updated_by'          => true
+            );
+        }
+
         foreach ($licenseKeyIds as $licenseKeyId) {
             /** @var LicenseResourceModel $license */
             $license = LicenseResourceRepository::instance()->find($licenseKeyId);
+            $data    = array();
 
             if (!$license) {
                 continue;
             }
 
-            $licenseKeys[] = array(
-                'order_id'    => $license->getOrderId(),
-                'product_id'  => $license->getProductId(),
-                'license_key' => $license->getDecryptedLicenseKey(),
-                'created_at'  => $license->getCreatedAt(),
-                'expires_at'  => $license->getExpiresAt(),
-                'valid_for'   => $license->getValidFor(),
-                'source'      => LicenseSource::getExportLabel($license->getSource()),
-                'status'      => LicenseStatus::getExportLabel($license->getStatus())
-            );
+            foreach (array_keys($columns) as $exportColumn) {
+
+                switch ($exportColumn) {
+                    case 'license_key':
+                        $data[$exportColumn] = $license->getDecryptedLicenseKey();
+                        break;
+                    case 'status':
+                        $data[$exportColumn] = LicenseStatus::getExportLabel($license->getStatus());
+                        break;
+                    default:
+                        $getter              = 'get' . lmfwc_camelize($exportColumn);
+                        $data[$exportColumn] = null;
+
+                        if (method_exists($license, $getter)) {
+                            $data[$exportColumn] = $license->{$getter}();
+                        }
+
+                        break;
+                }
+            }
+
+            $licenseKeys[] = $data;
         }
 
-        $filename = date('YmdHis') . '_license_keys_export.csv';
+        $licenseKeys = apply_filters('lmfwc_export_license_csv', $licenseKeys);
+        $filename    = date('YmdHis') . '_license_keys_export.csv';
 
-        // disable caching
+        // Disable caching
         $now = gmdate("D, d M Y H:i:s");
         header("Cache-Control: max-age=0, no-cache, must-revalidate, proxy-revalidate");
         header("Last-Modified: {$now} GMT");
 
-        // force download  
+        // Force download
         header("Content-Type: application/force-download");
         header("Content-Type: application/octet-stream");
         header("Content-Type: application/download");
 
-        // disposition / encoding on response body
+        // Disposition / encoding on response body
         header("Content-Disposition: attachment;filename={$filename}");
         header("Content-Transfer-Encoding: binary");
 
         ob_clean();
         ob_start();
         $df = fopen("php://output", 'w');
-        fputcsv($df, array_keys(reset($licenseKeys)));
+        fputcsv($df, array_keys($licenseKeys[0]));
 
         foreach ($licenseKeys as $row) {
-           fputcsv($df, $row);
+            fputcsv($df, $row);
         }
 
         fclose($df);

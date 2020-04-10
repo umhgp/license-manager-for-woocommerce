@@ -2,8 +2,8 @@
 
 namespace LicenseManagerForWooCommerce\Repositories\Resources;
 
-use stdClass;
 use LicenseManagerForWooCommerce\Abstracts\ResourceRepository as AbstractResourceRepository;
+use LicenseManagerForWooCommerce\Enums\ColumnType;
 use LicenseManagerForWooCommerce\Interfaces\ResourceRepository as ResourceRepositoryInterface;
 use LicenseManagerForWooCommerce\Models\Resources\LicenseMeta as LicenseMetaResourceModel;
 
@@ -25,15 +25,11 @@ class LicenseMeta extends AbstractResourceRepository implements ResourceReposito
 
         $this->table      = $wpdb->prefix . self::TABLE;
         $this->primaryKey = 'meta_id';
-    }
-
-    /**
-     * @param stdClass $dataObject
-     *
-     * @return mixed|LicenseMetaResourceModel
-     */
-    public function createResourceModel($dataObject)
-    {
-        return new LicenseMetaResourceModel($dataObject);
+        $this->model      = LicenseMetaResourceModel::class;
+        $this->mapping    = array(
+            'license_id' => ColumnType::BIGINT,
+            'meta_key'   => ColumnType::VARCHAR,
+            'meta_value' => ColumnType::LONGTEXT,
+        );
     }
 }

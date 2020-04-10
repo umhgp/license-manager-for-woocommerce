@@ -25,15 +25,42 @@ class Order
      */
     public function __construct()
     {
-        add_action('woocommerce_order_status_completed',               array($this, 'generateOrderLicenses'));
-        add_action('woocommerce_order_action_lmfwc_send_license_keys', array($this, 'processSendLicenseKeysAction'));
-        add_action('woocommerce_order_details_after_order_table',      array($this, 'showBoughtLicenses'),       10, 1);
-        add_filter('woocommerce_order_actions',                        array($this, 'addSendLicenseKeysAction'), 10, 1);
-        add_action('woocommerce_after_order_itemmeta',                 array($this, 'showOrderedLicenses'),      10, 3);
+        $this->addOrderStatusHooks();
+
+        add_action('woocommerce_order_action_lmfwc_send_license_keys', array($this, 'processSendLicenseKeysAction'), 10, 1);
+        add_action('woocommerce_order_details_after_order_table',      array($this, 'showBoughtLicenses'),           10, 1);
+        add_filter('woocommerce_order_actions',                        array($this, 'addSendLicenseKeysAction'),     10, 1);
+        add_action('woocommerce_after_order_itemmeta',                 array($this, 'showOrderedLicenses'),          10, 3);
     }
 
     /**
-     * Generates licenses when an order is set to complete.
+     * Hooks the license generation method into the woocommerce order status
+     * change hooks.
+     */
+    private function addOrderStatusHooks()
+    {
+        $orderStatusSettings = Settings::get('lmfwc_license_key_delivery_options', Settings::SECTION_ORDER_STATUS);
+
+        // The order status settings haven't been configured.
+        if (empty($orderStatusSettings)) {
+            return;
+        }
+
+        foreach ($orderStatusSettings as $status => $settings) {
+            if (array_key_exists('send', $settings)) {
+                $value = filter_var($settings['send'], FILTER_VALIDATE_BOOLEAN);
+
+                if ($value) {
+                    $filterStatus = str_replace('wc-', '', $status);
+
+                    add_action('woocommerce_order_status_' . $filterStatus, array($this, 'generateOrderLicenses'));
+                }
+            }
+        }
+    }
+
+    /**
+     * Generates licenses for an order.
      *
      * @param int $orderId
      */
@@ -45,15 +72,20 @@ class Order
         }
 
         /** @var WC_Order $order */
-        $order = new WC_Order($orderId);
+        $order = wc_get_order($orderId);
 
-        /** @var WC_Order_Item $itemData */
-        foreach ($order->get_items() as $itemData) {
+        // The given order does not exist
+        if (!$order) {
+            return;
+        }
+
+        /** @var WC_Order_Item $orderItem */
+        foreach ($order->get_items() as $orderItem) {
             /** @var WC_Product $product */
-            $product = $itemData->get_product();
+            $product = $orderItem->get_product();
 
             // Skip this product because it's not a licensed product.
-            if (!get_post_meta($product->get_id(), 'lmfwc_licensed_product', true)){
+            if (!get_post_meta($product->get_id(), 'lmfwc_licensed_product', true)) {
                 continue;
             }
 
@@ -79,7 +111,7 @@ class Order
             }
 
             // Set the needed delivery amount
-            $neededAmount = absint($itemData->get_quantity()) * $deliveredQuantity;
+            $neededAmount = absint($orderItem->get_quantity()) * $deliveredQuantity;
 
             // Sell license keys through available stock.
             if ($useStock) {
@@ -141,7 +173,7 @@ class Order
                             $generator
                         );
 
-                        // Create a backorder
+                        // TODO: Create a backorder
                     }
                 }
             }
@@ -267,7 +299,7 @@ class Order
         global $post;
 
         if (!empty(LicenseResourceRepository::instance()->findAllBy(array('order_id' => $post->ID)))) {
-            $actions['lmfwc_send_license_keys'] = __('Send license key(s) to customer', 'lmfwc');
+            $actions['lmfwc_send_license_keys'] = __('Send license key(s) to customer', 'license-manager-for-woocommerce');
         }
 
         return $actions;
@@ -300,7 +332,7 @@ class Order
             return;
         }
 
-        $html = sprintf('<p>%s:</p>', __('The following license keys have been sold by this order', 'lmfwc'));
+        $html = sprintf('<p>%s:</p>', __('The following license keys have been sold by this order', 'license-manager-for-woocommerce'));
         $html .= '<ul class="lmfwc-license-list">';
 
         if (!Settings::get('lmfwc_hide_license_keys')) {
@@ -313,6 +345,8 @@ class Order
             }
 
             $html .= '</ul>';
+
+            $html .= '<span class="lmfwc-txt-copied-to-clipboard" style="display: none">' . __('Copied to clipboard', 'license-manager-for-woocommerce') . '</span>';
         }
 
         else {
@@ -330,20 +364,22 @@ class Order
             $html .= sprintf(
                 '<a class="button lmfwc-license-keys-show-all" data-order-id="%d">%s</a>',
                 $item->get_order_id(),
-                __('Show license key(s)', 'lmfwc')
+                __('Show license key(s)', 'license-manager-for-woocommerce')
             );
 
             $html .= sprintf(
                 '<a class="button lmfwc-license-keys-hide-all" data-order-id="%d">%s</a>',
                 $item->get_order_id(),
-                __('Hide license key(s)', 'lmfwc')
+                __('Hide license key(s)', 'license-manager-for-woocommerce')
             );
 
             $html .= sprintf(
                 '<img class="lmfwc-spinner" alt="%s" src="%s">',
-                __('Please wait...', 'lmfwc'),
+                __('Please wait...', 'license-manager-for-woocommerce'),
                 LicensesList::SPINNER_URL
             );
+
+            $html .= '<span class="lmfwc-txt-copied-to-clipboard" style="display: none">' . __('Copied to clipboard', 'license-manager-for-woocommerce') . '</span>';
 
             $html .= '</p>';
         }

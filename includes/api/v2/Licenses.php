@@ -185,6 +185,16 @@ class Licenses extends LMFWC_REST_Controller
             return $this->routeDisabledError();
         }
 
+        if (!$this->permissionCheck('license', 'read')) {
+            return new WP_Error(
+                'lmfwc_rest_cannot_view',
+                __('Sorry, you cannot list resources.', 'license-manager-for-woocommerce'),
+                array(
+                    'status' => $this->authorizationRequiredCode()
+                )
+            );
+        }
+
         try {
             /** @var LicenseResourceModel[] $licenses */
             $licenses = LicenseResourceRepository::instance()->findAll();
@@ -230,6 +240,16 @@ class Licenses extends LMFWC_REST_Controller
     {
         if (!$this->isRouteEnabled($this->settings, '011')) {
             return $this->routeDisabledError();
+        }
+
+        if (!$this->permissionCheck('license', 'read')) {
+            return new WP_Error(
+                'lmfwc_rest_cannot_view',
+                __('Sorry, you cannot view this resource.', 'license-manager-for-woocommerce'),
+                array(
+                    'status' => $this->authorizationRequiredCode()
+                )
+            );
         }
 
         $licenseKey = sanitize_text_field($request->get_param('license_key'));
@@ -291,9 +311,21 @@ class Licenses extends LMFWC_REST_Controller
             return $this->routeDisabledError();
         }
 
+        if (!$this->permissionCheck('license', 'create')) {
+            return new WP_Error(
+                'lmfwc_rest_cannot_create',
+                __('Sorry, you are not allowed to create resources.', 'license-manager-for-woocommerce'),
+                array(
+                    'status' => $this->authorizationRequiredCode()
+                )
+            );
+        }
+
         $body = $request->get_params();
 
+        $orderId           = isset($body['order_id'])            ? absint($body['order_id'])                 : null;
         $productId         = isset($body['product_id'])          ? absint($body['product_id'])               : null;
+        $userId            = isset($body['user_id'])             ? absint($body['user_id'])                  : null;
         $licenseKey        = isset($body['license_key'])         ? sanitize_text_field($body['license_key']) : null;
         $validFor          = isset($body['valid_for'])           ? absint($body['valid_for'])                : null;
         $validFor          = $validFor                           ? $validFor                                 : null;
@@ -348,7 +380,9 @@ class Licenses extends LMFWC_REST_Controller
             /** @var LicenseResourceModel $license */
             $license = LicenseResourceRepository::instance()->insert(
                 array(
+                    'order_id'            => $orderId,
                     'product_id'          => $productId,
+                    'user_id'             => $userId,
                     'license_key'         => apply_filters('lmfwc_encrypt', $licenseKey),
                     'hash'                => apply_filters('lmfwc_hash', $licenseKey),
                     'valid_for'           => $validFor,
@@ -374,6 +408,11 @@ class Licenses extends LMFWC_REST_Controller
             );
         }
 
+        // Update the stock
+        if ($license->getProductId() !== null && $license->getStatus() === LicenseStatus::ACTIVE) {
+            apply_filters('lmfwc_stock_increase', $license->getProductId());
+        }
+
         $licenseData = $license->toArray();
 
         // Remove the hash and decrypt the license key
@@ -394,6 +433,16 @@ class Licenses extends LMFWC_REST_Controller
     {
         if (!$this->isRouteEnabled($this->settings, '013')) {
             return $this->routeDisabledError();
+        }
+
+        if (!$this->permissionCheck('license', 'edit')) {
+            return new WP_Error(
+                'lmfwc_rest_cannot_edit',
+                __('Sorry, you are not allowed to edit resources.', 'license-manager-for-woocommerce'),
+                array(
+                    'status' => $this->authorizationRequiredCode()
+                )
+            );
         }
 
         $body      = null;
@@ -483,6 +532,11 @@ class Licenses extends LMFWC_REST_Controller
             $updateData['valid_for'] = null;
         }
 
+        // Update the stock
+        if ($license->getProductId() !== null && $license->getStatus() === LicenseStatus::ACTIVE) {
+            apply_filters('lmfwc_stock_decrease', $license->getProductId());
+        }
+
         /** @var LicenseResourceModel $updatedLicense */
         $updatedLicense = LicenseResourceRepository::instance()->update($license->getId(), $updateData);
 
@@ -492,6 +546,11 @@ class Licenses extends LMFWC_REST_Controller
                 'The license key could not be updated.',
                 array('status' => 404)
             );
+        }
+
+        // Update the stock
+        if ($updatedLicense->getProductId() !== null && $updatedLicense->getStatus() === LicenseStatus::ACTIVE) {
+            apply_filters('lmfwc_stock_increase', $updatedLicense->getProductId());
         }
 
         $licenseData = $updatedLicense->toArray();
@@ -514,6 +573,16 @@ class Licenses extends LMFWC_REST_Controller
     {
         if (!$this->isRouteEnabled($this->settings, '014')) {
             return $this->routeDisabledError();
+        }
+
+        if (!$this->permissionCheck('license', 'edit')) {
+            return new WP_Error(
+                'lmfwc_rest_cannot_edit',
+                __('Sorry, you are not allowed to edit this resource.', 'license-manager-for-woocommerce'),
+                array(
+                    'status' => $this->authorizationRequiredCode()
+                )
+            );
         }
 
         $licenseKey = sanitize_text_field($request->get_param('license_key'));
@@ -552,19 +621,15 @@ class Licenses extends LMFWC_REST_Controller
             );
         }
 
-        // Check if the license key can be activated
-        $timesActivated    = absint($license->getTimesActivated());
-        $timesActivatedMax = absint($license->getTimesActivatedMax());
+        $timesActivated    = null;
+        $timesActivatedMax = null;
 
-        if (!$timesActivatedMax) {
-            return new WP_Error(
-                'lmfwc_rest_data_error',
-                sprintf(
-                    'License Key: %s can not be activated (times_activated_max not set).',
-                    $licenseKey
-                ),
-                array('status' => 404)
-            );
+        if ($license->getTimesActivated() !== null) {
+            $timesActivated = absint($license->getTimesActivated());
+        }
+
+        if ($license->getTimesActivatedMax() !== null) {
+            $timesActivatedMax = absint($license->getTimesActivatedMax());
         }
 
         if ($timesActivatedMax && ($timesActivated >= $timesActivatedMax)) {
@@ -625,6 +690,16 @@ class Licenses extends LMFWC_REST_Controller
             return $this->routeDisabledError();
         }
 
+        if (!$this->permissionCheck('license', 'edit')) {
+            return new WP_Error(
+                'lmfwc_rest_cannot_edit',
+                __('Sorry, you are not allowed to edit this resource.', 'license-manager-for-woocommerce'),
+                array(
+                    'status' => $this->authorizationRequiredCode()
+                )
+            );
+        }
+
         $licenseKey = sanitize_text_field($request->get_param('license_key'));
 
         if (!$licenseKey) {
@@ -661,19 +736,10 @@ class Licenses extends LMFWC_REST_Controller
             );
         }
 
-        // Check if the license key can be activated
-        $timesActivated    = absint($license->getTimesActivated());
-        $timesActivatedMax = absint($license->getTimesActivatedMax());
+        $timesActivated   = null;
 
-        if (!$timesActivatedMax) {
-            return new WP_Error(
-                'lmfwc_rest_data_error',
-                sprintf(
-                    'License Key: %s can not be deactivated (times_activated_max not set).',
-                    $licenseKey
-                ),
-                array('status' => 404)
-            );
+        if ($license->getTimesActivated() !== null) {
+            $timesActivated = absint($license->getTimesActivated());
         }
 
         if (!$timesActivated || $timesActivated == 0) {
@@ -727,6 +793,16 @@ class Licenses extends LMFWC_REST_Controller
     {
         if (!$this->isRouteEnabled($this->settings, '016')) {
             return $this->routeDisabledError();
+        }
+
+        if (!$this->permissionCheck('license', 'read')) {
+            return new WP_Error(
+                'lmfwc_rest_cannot_view',
+                __('Sorry, you cannot view this resource.', 'license-manager-for-woocommerce'),
+                array(
+                    'status' => $this->authorizationRequiredCode()
+                )
+            );
         }
 
         $urlParams = $request->get_url_params();

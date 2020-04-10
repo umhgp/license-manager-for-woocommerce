@@ -2,6 +2,7 @@
 
 namespace LicenseManagerForWooCommerce\Abstracts;
 
+use LicenseManagerForWooCommerce\Enums\ColumnType as ColumnTypeEnum;
 use LicenseManagerForWooCommerce\Interfaces\ResourceRepository as RepositoryInterface;
 
 defined('ABSPATH') || exit;
@@ -19,11 +20,51 @@ abstract class ResourceRepository extends Singleton implements RepositoryInterfa
     protected $primaryKey;
 
     /**
+     * @var string
+     */
+    protected $model;
+
+    /**
+     * @var array
+     */
+    protected $mapping;
+
+    /**
+     * Sanitizes the user data when adding or updating entities.
+     *
+     * @param array $data
+     *
+     * @return void
+     */
+    function sanitize(&$data)
+    {
+        foreach ($data as $column => $value) {
+            switch ($this->mapping[$column]) {
+                case ColumnTypeEnum::CHAR:
+                case ColumnTypeEnum::VARCHAR:
+                case ColumnTypeEnum::LONGTEXT:
+                case ColumnTypeEnum::DATETIME:
+                    if ($data[$column] !== null) {
+                        $data[$column] = sanitize_text_field($value);
+                    }
+                    break;
+                case ColumnTypeEnum::INT:
+                case ColumnTypeEnum::TINYINT:
+                case ColumnTypeEnum::BIGINT:
+                    if ($data[$column] !== null) {
+                        $data[$column] = intval($value);
+                    }
+                    break;
+            }
+        }
+    }
+
+    /**
      * Adds a new entry to the table.
      *
      * @param array $data
      *
-     * @return mixed|void
+     * @return bool|ResourceModel
      */
     public function insert($data)
     {
@@ -33,6 +74,9 @@ abstract class ResourceRepository extends Singleton implements RepositoryInterfa
             'created_at' => gmdate('Y-m-d H:i:s'),
             'created_by' => get_current_user_id()
         );
+
+        // Pass the data by reference and sanitize its contents
+        $this->sanitize($data);
 
         $insert = $wpdb->insert($this->table, array_merge($data, $meta));
 
@@ -48,10 +92,14 @@ abstract class ResourceRepository extends Singleton implements RepositoryInterfa
      *
      * @param int $id
      *
-     * @return mixed|void
+     * @return bool|ResourceModel
      */
     public function find($id)
     {
+        if (!class_exists($this->model)) {
+            return false;
+        }
+
         global $wpdb;
 
         $result = $wpdb->get_row(
@@ -65,7 +113,7 @@ abstract class ResourceRepository extends Singleton implements RepositoryInterfa
             return false;
         }
 
-        return $this->createResourceModel($result);
+        return new $this->model($result);
     }
 
     /**
@@ -73,11 +121,11 @@ abstract class ResourceRepository extends Singleton implements RepositoryInterfa
      *
      * @param array $query
      *
-     * @return mixed|void
+     * @return bool|ResourceModel
      */
     public function findBy($query)
     {
-        if (!$query || !is_array($query) || count($query) <= 0) {
+        if (!class_exists($this->model) || !$query || !is_array($query) || count($query) <= 0) {
             return false;
         }
 
@@ -93,13 +141,13 @@ abstract class ResourceRepository extends Singleton implements RepositoryInterfa
             return false;
         }
 
-        return $this->createResourceModel($result);
+        return new $this->model($result);
     }
 
     /**
      * Retrieves all table rows as an array.
      *
-     * @return mixed|void
+     * @return bool|ResourceModel[]
      */
     public function findAll()
     {
@@ -126,11 +174,11 @@ abstract class ResourceRepository extends Singleton implements RepositoryInterfa
      * @param null|string $orderBy
      * @param null|string $sort
      *
-     * @return mixed|void
+     * @return bool|ResourceModel[]
      */
     public function findAllBy($query, $orderBy = null, $sort = null)
     {
-        if (!$query || !is_array($query) || count($query) <= 0) {
+        if (!class_exists($this->model) || !$query || !is_array($query) || count($query) <= 0) {
             return false;
         }
 
@@ -151,7 +199,7 @@ abstract class ResourceRepository extends Singleton implements RepositoryInterfa
         $sqlQuery .= ';';
 
         foreach ($wpdb->get_results($sqlQuery) as $row) {
-            $result[] = $this->createResourceModel($row);
+            $result[] = new $this->model($row);
         }
 
         return $result;
@@ -163,7 +211,7 @@ abstract class ResourceRepository extends Singleton implements RepositoryInterfa
      * @param int   $id
      * @param array $data
      *
-     * @return mixed|void
+     * @return bool|ResourceModel
      */
     public function update($id, $data)
     {
@@ -173,6 +221,9 @@ abstract class ResourceRepository extends Singleton implements RepositoryInterfa
             'updated_at' => gmdate('Y-m-d H:i:s'),
             'updated_by' => get_current_user_id()
         );
+
+        // Pass the data by reference and sanitize its contents
+        $this->sanitize($data);
 
         $updated = $wpdb->update(
             $this->table,
@@ -193,7 +244,7 @@ abstract class ResourceRepository extends Singleton implements RepositoryInterfa
      * @param array $query
      * @param array $data
      *
-     * @return int|bool
+     * @return bool|int
      */
     public function updateBy($query, $data)
     {
@@ -220,6 +271,10 @@ abstract class ResourceRepository extends Singleton implements RepositoryInterfa
             elseif (is_string($value)) {
                 $sqlQuery .= " {$columnName} = '{$value}',";
             }
+
+            elseif ($value === null) {
+                $sqlQuery .= " {$columnName} = NULL,";
+            }
         }
 
         $sqlQuery = rtrim($sqlQuery, ',');
@@ -237,7 +292,7 @@ abstract class ResourceRepository extends Singleton implements RepositoryInterfa
      *
      * @param array $ids
      *
-     * @return mixed|void
+     * @return bool|int
      */
     public function delete($ids)
     {
@@ -254,7 +309,7 @@ abstract class ResourceRepository extends Singleton implements RepositoryInterfa
      *
      * @param array $query
      *
-     * @return mixed|void
+     * @return bool|int
      */
     public function deleteBy($query)
     {
@@ -274,7 +329,7 @@ abstract class ResourceRepository extends Singleton implements RepositoryInterfa
     /**
      * Retrieves the total count of table entries.
      *
-     * @return int|mixed
+     * @return int
      */
     public function count()
     {
@@ -290,7 +345,7 @@ abstract class ResourceRepository extends Singleton implements RepositoryInterfa
      *
      * @param array $query
      *
-     * @return mixed|void
+     * @return int
      */
     public function countBy($query)
     {
@@ -327,13 +382,13 @@ abstract class ResourceRepository extends Singleton implements RepositoryInterfa
     /**
      * Truncates the table.
      *
-     * @return mixed|void
+     * @return bool|int
      */
     public function truncate()
     {
         global $wpdb;
 
-        $wpdb->query("TRUNCATE TABLE {$this->table};");
+        return $wpdb->query("TRUNCATE TABLE {$this->table};");
     }
 
     /**
@@ -359,6 +414,10 @@ abstract class ResourceRepository extends Singleton implements RepositoryInterfa
                 $value = absint($value);
                 $result .= "AND {$columnName} = {$value} ";
             }
+
+            elseif ($value === null) {
+                $result .= "AND {$columnName} IS NULL ";
+            }
         }
 
         return $result;
@@ -378,6 +437,22 @@ abstract class ResourceRepository extends Singleton implements RepositoryInterfa
     public function getPrimaryKey()
     {
         return $this->primaryKey;
+    }
+
+    /**
+     * @return string
+     */
+    public function getModel()
+    {
+        return $this->model;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMapping()
+    {
+        return $this->mapping;
     }
 
     /**

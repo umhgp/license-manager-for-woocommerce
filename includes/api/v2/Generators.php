@@ -123,6 +123,17 @@ class Generators extends LMFWC_REST_Controller
             return $this->routeDisabledError();
         }
 
+        if (!$this->permissionCheck('generator', 'read')) {
+            return new WP_Error(
+                'lmfwc_rest_cannot_view',
+                __('Sorry, you cannot list resources.', 'license-manager-for-woocommerce'),
+                array(
+                    'status' => $this->authorizationRequiredCode()
+                )
+            );
+        }
+
+
         try {
             /** @var GeneratorResourceModel[] $generator */
             $generators = GeneratorResourceRepository::instance()->findAll();
@@ -163,6 +174,16 @@ class Generators extends LMFWC_REST_Controller
     {
         if (!$this->isRouteEnabled($this->settings, '018')) {
             return $this->routeDisabledError();
+        }
+
+        if (!$this->permissionCheck('generator', 'read')) {
+            return new WP_Error(
+                'lmfwc_rest_cannot_view',
+                __('Sorry, you cannot view this resource.', 'license-manager-for-woocommerce'),
+                array(
+                    'status' => $this->authorizationRequiredCode()
+                )
+            );
         }
 
         $generatorId = absint($request->get_param('generator_id'));
@@ -213,6 +234,16 @@ class Generators extends LMFWC_REST_Controller
             return $this->routeDisabledError();
         }
 
+        if (!$this->permissionCheck('generator', 'create')) {
+            return new WP_Error(
+                'lmfwc_rest_cannot_create',
+                __('Sorry, you are not allowed to create resources.', 'license-manager-for-woocommerce'),
+                array(
+                    'status' => $this->authorizationRequiredCode()
+                )
+            );
+        }
+
         $body = $request->get_params();
 
         $name              = isset($body['name'])                ? sanitize_text_field($body['name'])      : null;
@@ -228,7 +259,7 @@ class Generators extends LMFWC_REST_Controller
         if (!$name) {
             return new WP_Error(
                 'lmfwc_rest_data_error',
-                __('The Generator name is missing from the request.', 'lmfwc'),
+                __('The Generator name is missing from the request.', 'license-manager-for-woocommerce'),
                 array('status' => 404)
             );
         }
@@ -236,7 +267,7 @@ class Generators extends LMFWC_REST_Controller
         if (!$charset) {
             return new WP_Error(
                 'lmfwc_rest_data_error',
-                __('The Generator charset is missing from the request.', 'lmfwc'),
+                __('The Generator charset is missing from the request.', 'license-manager-for-woocommerce'),
                 array('status' => 404)
             );
         }
@@ -244,7 +275,7 @@ class Generators extends LMFWC_REST_Controller
         if (!$chunks) {
             return new WP_Error(
                 'lmfwc_rest_data_error',
-                __('The Generator chunks is missing from the request.', 'lmfwc'),
+                __('The Generator chunks is missing from the request.', 'license-manager-for-woocommerce'),
                 array('status' => 404)
             );
         }
@@ -252,7 +283,7 @@ class Generators extends LMFWC_REST_Controller
         if (!$chunkLength) {
             return new WP_Error(
                 'lmfwc_rest_data_error',
-                __('The Generator chunk length is missing from the request.', 'lmfwc'),
+                __('The Generator chunk length is missing from the request.', 'license-manager-for-woocommerce'),
                 array('status' => 404)
             );
         }
@@ -283,7 +314,7 @@ class Generators extends LMFWC_REST_Controller
         if (!$generator) {
             return new WP_Error(
                 'lmfwc_rest_data_error',
-                __('The Generator could not be added to the database.', 'lmfwc'),
+                __('The Generator could not be added to the database.', 'license-manager-for-woocommerce'),
                 array('status' => 404)
             );
         }
@@ -304,6 +335,16 @@ class Generators extends LMFWC_REST_Controller
             return $this->routeDisabledError();
         }
 
+        if (!$this->permissionCheck('generator', 'edit')) {
+            return new WP_Error(
+                'lmfwc_rest_cannot_edit',
+                __('Sorry, you are not allowed to edit resources.', 'license-manager-for-woocommerce'),
+                array(
+                    'status' => $this->authorizationRequiredCode()
+                )
+            );
+        }
+
         $body        = null;
         $generatorId = null;
 
@@ -320,7 +361,7 @@ class Generators extends LMFWC_REST_Controller
         if (!$generatorId) {
             return new WP_Error(
                 'lmfwc_rest_data_error',
-                __('The Generator ID is missing from the request.', 'lmfwc'),
+                __('The Generator ID is missing from the request.', 'license-manager-for-woocommerce'),
                 array('status' => 404)
             );
         }

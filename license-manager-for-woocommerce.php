@@ -7,10 +7,10 @@
  * Author: Dražen Bebić
  * Author URI: https://www.licensemanager.at/
  * Requires at least: 4.7
- * Tested up to: 5.3
+ * Tested up to: 5.4
  * Requires PHP: 5.6
  * WC requires at least: 2.7
- * WC tested up to: 3.8
+ * WC tested up to: 4.0
  */
 
 namespace LicenseManagerForWooCommerce;

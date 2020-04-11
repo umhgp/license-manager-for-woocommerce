@@ -169,6 +169,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
         $cleanOrderId     = $orderId   ? absint($orderId)   : null;
         $cleanProductId   = $productId ? absint($productId) : null;
         $cleanStatus      = $status    ? absint($status)    : null;
+        $userId           = null;
 
         if (!$cleanStatus || !in_array($cleanStatus, LicenseStatus::$status)) {
             throw new Exception('License Status is invalid.');
@@ -184,6 +185,11 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
 
         if (count($cleanLicenseKeys) === 0) {
             throw new Exception('No License Keys were provided');
+        }
+
+        /** @var WC_Order $order */
+        if ($order = wc_get_order($orderId)) {
+            $userId = $order->get_user_id();
         }
 
         $gmtDate           = new DateTime('now', new DateTimeZone('GMT'));
@@ -213,7 +219,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
                 array(
                     'order_id'            => $cleanOrderId,
                     'product_id'          => $cleanProductId,
-                    'user_id'             => get_current_user_id(),
+                    'user_id'             => $userId,
                     'license_key'         => $encryptedLicenseKey,
                     'hash'                => $hashedLicenseKey,
                     'expires_at'          => $expiresAt,
@@ -338,6 +344,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
         $cleanLicenseKeys = $licenses;
         $cleanOrderId     = $orderId ? absint($orderId) : null;
         $cleanAmount      = $amount  ? absint($amount)  : null;
+        $userId           = null;
 
         if (!is_array($licenses) || count($licenses) <= 0) {
             throw new Exception('License Keys are invalid.');
@@ -349,6 +356,11 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
 
         if (!$cleanOrderId) {
             throw new Exception('Amount is invalid.');
+        }
+
+        /** @var WC_Order $order */
+        if ($order = wc_get_order($cleanOrderId)) {
+            $userId = $order->get_user_id();
         }
 
         for ($i = 0; $i < $cleanAmount; $i++) {
@@ -367,7 +379,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
                 $license->getId(),
                 array(
                     'order_id'   => $cleanOrderId,
-                    'user_id'    => get_current_user_id(),
+                    'user_id'    => $userId,
                     'expires_at' => $expiresAt,
                     'status'     => LicenseStatus::SOLD
                 )

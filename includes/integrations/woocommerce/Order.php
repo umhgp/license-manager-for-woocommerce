@@ -308,14 +308,19 @@ class Order
     /**
      * Hook into the WordPress Order Item Meta Box and display the license key(s).
      *
-     * @param int                   $itemId
-     * @param WC_Order_Item_Product $item
-     * @param WC_Product_Simple     $product
+     * @param int                    $itemId
+     * @param WC_Order_Item_Product  $item
+     * @param WC_Product_Simple|bool $product
      */
     public function showOrderedLicenses($itemId, $item, $product)
     {
         // Not a WC_Order_Item_Product object? Nothing to do...
         if (!($item instanceof WC_Order_Item_Product)) {
+            return;
+        }
+
+        // The product does not exist anymore
+        if (!$product) {
             return;
         }
 

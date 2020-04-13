@@ -27,10 +27,16 @@ defined('ABSPATH') || exit; ?>
 <h2><?php _e('Your license keys', 'license-manager-for-woocommerce'); ?></h2>
 
 <?php foreach ($licenseKeys as $productId => $licenseKeyData): ?>
+    <?php $product = wc_get_product($productId); ?>
+
     <h3 class="product-name">
-        <a href="<?php echo esc_url(get_post_permalink($productId)); ?>">
-            <span><?php echo ($licenseKeyData['name']); ?></span>
-        </a>
+        <?php if ($product): ?>
+            <a href="<?php echo esc_url(get_post_permalink($productId)); ?>">
+                <span><?php echo ($licenseKeyData['name']); ?></span>
+            </a>
+        <?php else: ?>
+            <span><?php echo __('Product', 'license-manager-for-woocommerce') . ' #' . $productId; ?></span>
+        <?php endif; ?>
     </h3>
 
     <table class="shop_table shop_table_responsive my_account_orders">
@@ -46,12 +52,12 @@ defined('ABSPATH') || exit; ?>
         <tbody>
 
         <?php
-            /** @var LicenseResourceModel $license */
-            foreach ($licenseKeyData['licenses'] as $license):
-                $timesActivated    = $license->getTimesActivated() ? $license->getTimesActivated() : '0';
-                $timesActivatedMax = $license->getTimesActivatedMax() ? $license->getTimesActivatedMax() : '&infin;';
-                $order             = wc_get_order($license->getOrderId());
-        ?>
+        /** @var LicenseResourceModel $license */
+        foreach ($licenseKeyData['licenses'] as $license):
+            $timesActivated    = $license->getTimesActivated() ? $license->getTimesActivated() : '0';
+            $timesActivatedMax = $license->getTimesActivatedMax() ? $license->getTimesActivatedMax() : '&infin;';
+            $order             = wc_get_order($license->getOrderId());
+            ?>
             <tr>
                 <td><span class="lmfwc-myaccount-license-key"><?php echo $license->getDecryptedLicenseKey(); ?></span></td>
                 <td>
@@ -64,7 +70,7 @@ defined('ABSPATH') || exit; ?>
                         $date = new \DateTime($license->getExpiresAt());
                         printf('<b>%s</b>', $date->format($dateFormat));
                     }
-                ?></td>
+                    ?></td>
                 <td class="license-key-actions">
                     <?php if (Settings::get('lmfwc_allow_users_to_activate')): ?>
                         <form method="post" style="display: inline-block; margin: 0;">

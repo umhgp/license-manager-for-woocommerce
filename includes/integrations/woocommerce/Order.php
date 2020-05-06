@@ -78,6 +78,11 @@ class Order
         if (!$order) {
             return;
         }
+        
+        // skip if order is renewal
+        if ($order->data['created_via'] == 'subscription') {
+            return;
+        }
 
         /** @var WC_Order_Item $orderItem */
         foreach ($order->get_items() as $orderItem) {

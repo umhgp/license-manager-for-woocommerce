@@ -37,6 +37,10 @@ class Email
         ) {
             return;
         }
+        
+        if ($order->data['created_via'] == 'subscription') {
+            return;
+        }
 
         if (!$data = apply_filters('lmfwc_get_customer_license_keys', $order)) {
             return;

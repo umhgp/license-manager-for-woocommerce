@@ -264,6 +264,10 @@ class Order
         ) {
             return;
         }
+        
+        if ($order->get_created_via() == 'subscription') {
+            return;
+        }
 
         $data = apply_filters('lmfwc_get_customer_license_keys', $order);
 

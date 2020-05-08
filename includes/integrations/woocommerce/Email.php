@@ -38,7 +38,7 @@ class Email
             return;
         }
         
-        if ($order->data['created_via'] == 'subscription') {
+        if ($order->get_created_via() == 'subscription') {
             return;
         }
 
